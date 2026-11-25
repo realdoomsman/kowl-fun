@@ -149,6 +149,15 @@ function initCA() {
     toast(ok ? "CA copied. don't get kowl'd by fakes." : "copy failed. select it by hand.");
     melt(...evPoint(e));
   });
+  const bar = $("#launchbar");
+  if (bar) {
+    bar.hidden = false;
+    $("#lbCaText").textContent = CA;
+    $("#lbCa").addEventListener("click", async () => {
+      const ok = await copy(CA);
+      toast(ok ? "CA copied. don't get kowl'd by fakes." : "copy failed. select it by hand.");
+    });
+  }
 }
 
 /* =====================================================================

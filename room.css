@@ -107,6 +107,17 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(245, 163, 15
 .live-chip b { font-weight: 400; opacity: .8; }
 @media (max-width: 560px) { .live-chip { padding: 0 11px; gap: 6px; } .live-chip span { font-size: 0; } .live-chip span::after { content: "live"; font-size: 12px; } .live-chip b { display: none; } .brand p { display: none; } }
 .nav-pay b { color: var(--gold-l); }
+.launchbar { position: fixed; z-index: 39; top: calc(max(12px, env(safe-area-inset-top)) + 52px); left: 50%; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; max-width: calc(100vw - 24px); }
+.launchbar[hidden] { display: none; }
+.launchbar > * { height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 999px; font: 700 12px/1 var(--mono); white-space: nowrap; text-decoration: none; transition: transform .2s var(--ease); }
+.launchbar > *:hover { transform: translateY(-2px); }
+.lb-ca { border: 1px solid rgba(255, 255, 255, .2); background: rgba(10, 6, 18, .78); color: #f4efe6; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; min-width: 0; }
+.lb-ca small { color: var(--gold-l); letter-spacing: .08em; }
+.lb-ca code { font: 600 12px/1 var(--mono); overflow: hidden; text-overflow: ellipsis; max-width: 30ch; }
+.lb-ca span { opacity: .7; text-transform: uppercase; font-size: 11px; }
+.lb-buy { background: #3dff88; color: #07130b; border: 1px solid #7dffb0; box-shadow: 0 0 20px rgba(61, 255, 136, .35); }
+.lb-join { background: #ffb347; color: #1b0f02; border: 1px solid #ffd08a; box-shadow: 0 0 20px rgba(255, 179, 71, .35); }
+@media (max-width: 720px) { .launchbar { flex-wrap: wrap; justify-content: center; width: calc(100vw - 24px); } .lb-ca { width: 100%; justify-content: center; } .lb-ca code { max-width: 58vw; } .launchbar > * { height: 36px; font-size: 11px; padding: 0 12px; } .lb-buy, .lb-join { flex: 1 1 0; justify-content: center; min-width: 0; } .lb-long { display: none; } }
 .ember { width: 9px; height: 9px; border-radius: 50%; background: #3dff88; box-shadow: 0 0 10px #3dff88; animation: ember 1.6s ease-in-out infinite; }
 .ember.off { background: #ff9d2e; box-shadow: 0 0 10px #ff9d2e; }
 @keyframes ember { 50% { opacity: .45; } }

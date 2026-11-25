@@ -31,7 +31,7 @@
 <link rel="preload" href="models/kowl.glb" as="fetch" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://api.kowl.fun" crossorigin>
-<link rel="stylesheet" href="room.css?v=7">
+<link rel="stylesheet" href="room.css?v=7b">
 <script type="importmap">
 {
   "imports": {
@@ -83,6 +83,11 @@
     <button class="hud-btn menu" id="menuBtn" type="button" aria-expanded="false" aria-controls="index"><span>everything</span><i></i><i></i></button>
   </div>
 </header>
+<div class="launchbar" id="launchbar" hidden>
+  <button class="lb-ca" id="lbCa" type="button" aria-label="copy the contract address"><small>CA</small><code id="lbCaText"></code><span>copy</span></button>
+  <a class="lb-buy" data-link="pump" href="#" target="_blank" rel="noopener">buy<span class="lb-long"> on pump.fun</span> ↗</a>
+  <a class="lb-join" href="#payroll">become a kowl<span class="lb-long"> · get paid</span></a>
+</div>
 <p class="hint" id="hint" aria-hidden="true" hidden><span>click things.</span><small>drag kowl. throw him. he's fine.</small></p>
 <div class="ticker" aria-hidden="true"><div class="ticker-run" id="chantRun"></div></div>
 
@@ -657,8 +662,8 @@
 <div class="melt-layer" id="meltLayer" aria-hidden="true"></div>
 <noscript><p class="noscript">kowl's room needs JavaScript to open the door. everything is also on <a href="https://x.com/KowlFun">X @KowlFun</a>.</p></noscript>
 
-<script src="sfx.js?v=7" defer></script>
-<script src="app.js?v=7" defer></script>
-<script src="payroll.js?v=7" defer></script>
+<script src="sfx.js?v=7b" defer></script>
+<script src="app.js?v=7b" defer></script>
+<script src="payroll.js?v=7b" defer></script>
 </body>
 </html>
