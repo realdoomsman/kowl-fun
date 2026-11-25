@@ -7,7 +7,7 @@ const LINKS = {
   telegram: "#",                     // https://t.me/...
   pump: "#",                         // https://pump.fun/coin/<CA>
 };
-const API_BASE = "";                 // kowl payroll API, e.g. https://kowl-payroll.up.railway.app ("" = not deployed yet: payroll shows "opens at launch")
+const API_BASE = "https://api.kowl.fun"; // kowl payroll API (Railway). "" = payroll shows "opens at launch"
 const GOOGLE_CLIENT_ID = "";         // Google Identity Services web client id ("" = "sign-in opens at launch"). the site's origin must be an authorised JS origin.
 // live chart: the "chart" section stays hidden while this is "". GeckoTerminal embed by POOL address:
 //   https://www.geckoterminal.com/solana/pools/<POOL>?embed=1&info=0&swaps=0&light_chart=1&chart_type=market_cap&resolution=15m
