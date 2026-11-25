@@ -3,7 +3,7 @@
    ===================================================================== */
 const CA = "coming soon";            // paste the contract address here
 const LINKS = {
-  x: "https://x.com/kowlcoin",       // official X. (@kowl is an unrelated real person: never link it)
+  x: "https://x.com/KowlFun",        // official X: @KowlFun. (@kowl is an unrelated real person: never link it)
   telegram: "#",                     // https://t.me/...
   pump: "#",                         // https://pump.fun/coin/<CA>
 };
@@ -135,7 +135,7 @@ function initTicker() {
   run.innerHTML = html + html;
 }
 
-/* ---------------- hero kowl ---------------- */
+/* ---------------- kowl's lines per pose (the studio in tv.js uses them) ---------------- */
 const POSES = {
   gm: ["gm", "gm to my 840k bots", "gm. anyway, this is the one"],
   "this-is-the-one": ["this is the one.", "this one. no, THIS one.", "41st \"the one\" today"],
@@ -153,76 +153,6 @@ const POSES = {
   melted: ["🫠"],
 };
 const POKE_POSES = Object.keys(POSES).filter((p) => p !== "melted" && p !== "sus");
-function initHero() {
-  // preload every pose so swaps are instant
-  Object.keys(POSES).forEach((p) => { const i = new Image(); i.src = IMG(p); });
-  const btn = $("#heroKowl"), img = $("#heroImg"), jelly = $(".jelly", btn), tilt = $(".jelly-tilt", btn), bubble = $("#heroBubble");
-  const stage = $(".hero-art");
-  let base = "gm", current = "gm", pokes = 0, clickedThisHover = false, bubbleT;
-
-  const show = (pose, line) => {
-    current = pose;
-    img.src = IMG(pose);
-    if (line != null) say(line);
-  };
-  const say = (line) => {
-    bubble.textContent = line;
-    bubble.classList.remove("pop"); void bubble.offsetWidth; bubble.classList.add("pop");
-  };
-  const boing = () => { jelly.classList.remove("boing"); void jelly.offsetWidth; jelly.classList.add("boing"); };
-  jelly.addEventListener("animationend", (e) => { if (e.animationName === "boing") jelly.classList.remove("boing"); });
-
-  btn.addEventListener("pointerenter", (e) => {
-    if (e.pointerType !== "mouse") return;
-    clickedThisHover = false;
-    show("sus", pick(POSES.sus));
-  });
-  btn.addEventListener("pointerleave", (e) => {
-    if (e.pointerType !== "mouse") return;
-    if (!clickedThisHover) show(base, pick(POSES[base]));
-    tilt.style.setProperty("--skx", "0deg");
-    tilt.style.setProperty("--rot", "0deg");
-  });
-  btn.addEventListener("click", (e) => {
-    pokes++;
-    clickedThisHover = true;
-    let pose;
-    if (pokes % 7 === 0) {
-      pose = "melted";
-      show(pose, "you poked him so hard he melted 🫠");
-    } else {
-      do { pose = pick(POKE_POSES); } while (pose === current);
-      show(pose, pokes === 12 ? "stop poking me. i'm a thought leader." : pick(POSES[pose]));
-    }
-    base = pose;
-    boing();
-    melt(...evPoint(e), 4);
-    clearTimeout(bubbleT);
-    bubbleT = setTimeout(() => { if (!btn.matches(":hover")) { base = "gm"; show("gm", "gm"); } }, 9000);
-  });
-
-  // jelly leans toward the pointer
-  if (matchMedia("(pointer: fine)").matches) {
-    stage.addEventListener("pointermove", (e) => {
-      const r = btn.getBoundingClientRect();
-      const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
-      const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
-      const k = Math.max(-1, Math.min(1, dx));
-      tilt.style.setProperty("--skx", (-k * 7).toFixed(2) + "deg");
-      tilt.style.setProperty("--rot", (k * 3 * Math.max(0.3, 1 - Math.abs(dy) / 2)).toFixed(2) + "deg");
-    });
-    stage.addEventListener("pointerleave", () => {
-      tilt.style.setProperty("--skx", "0deg");
-      tilt.style.setProperty("--rot", "0deg");
-    });
-  }
-
-  // idle chatter
-  setInterval(() => {
-    if (document.hidden || btn.matches(":hover")) return;
-    say(pick(POSES[current]));
-  }, 6500);
-}
 
 /* ---------------- timeline ---------------- */
 const ICON = {
@@ -262,7 +192,7 @@ const POSTS = [
     tags: ["paid"], ago: "14m",
     text: "been watching $GOO for a while 👀",
     note: "on-chain: kowl's wallet bought $GOO at 2:56pm. this post went up at 3:00pm. \"a while\" = 4 minutes.",
-    chain: "14:56:02  kowl.sol   BUY   41,200,000 $GOO\n15:00:00  @kowlcoin \"been watching for a while\"\n15:01:13  kowl.sol   <s>SELL  41,200,000 $GOO</s>",
+    chain: "14:56:02  kowl.sol   BUY   41,200,000 $GOO\n15:00:00  @KowlFun \"been watching for a while\"\n15:01:13  kowl.sol   <s>SELL  41,200,000 $GOO</s>",
   },
   {
     tags: ["paid"], ago: "31m", pose: "this-is-the-one",
@@ -346,7 +276,7 @@ function postHTML(p, i) {
     ${p.pin ? '<div class="pin">📌 Pinned</div>' : ""}
     <img class="pfp" src="${HEAD}" alt="" width="44" height="44" loading="lazy">
     <div class="pbody">
-      <div class="phead"><b>kowl</b>${VERIFIED}<span class="mut">@kowlcoin · ${p.ago}</span><span class="paid-tag">${p.tags.includes("paid") ? "paid partnership" : p.tags.includes("deleted") ? "deleted" : "context added"}</span></div>
+      <div class="phead"><b>kowl</b>${VERIFIED}<span class="mut">@KowlFun · ${p.ago}</span><span class="paid-tag">${p.tags.includes("paid") ? "paid partnership" : p.tags.includes("deleted") ? "deleted" : "context added"}</span></div>
       ${text}
       ${media}
       <button class="note-btn" aria-expanded="false">${ICON.note}<span>readers added context</span></button>
@@ -736,7 +666,7 @@ async function drawShill() {
   const nw = ctx.measureText("kowl").width;
   badge(P + 124 + nw + 8, y + 12, 38);
   ctx.fillStyle = C.mut; ctx.font = `400 34px ${UIFONT}`;
-  ctx.fillText("@kowlcoin", P + 124, y + 90);
+  ctx.fillText("@KowlFun", P + 124, y + 90);
   // ··· and paid badge (hidden from view, like the disclosure)
   ctx.fillStyle = C.mut; ctx.font = `700 40px ${UIFONT}`;
   ctx.textAlign = "right"; ctx.fillText("···", W - P, y + 44); ctx.textAlign = "left";
@@ -835,7 +765,7 @@ async function drawShill() {
   ctx.fillText("@notkowl · 1m", P + 104 + uw, y);
   ctx.fillText("Replying to ", P + 104, y + 46);
   ctx.fillStyle = "#1D9BF0";
-  ctx.fillText("@kowlcoin", P + 104 + ctx.measureText("Replying to ").width, y + 46);
+  ctx.fillText("@KowlFun", P + 104 + ctx.measureText("Replying to ").width, y + 46);
   ctx.font = `700 50px ${UIFONT}`; ctx.fillStyle = C.fg;
   ctx.fillText("who paid you?", P + 104, y + 100);
 
@@ -1022,11 +952,11 @@ async function initMemes() {
     if (b) openLightbox(+b.dataset.i);
   });
   const more = $("#moreMemes");
-  if (memes.length > 10) {
-    grid.classList.add("clip");
+  if (memes.length > 15) {
+    grid.classList.add("clipped");
     more.hidden = false;
     more.textContent = `show all ${memes.length} memes`;
-    more.addEventListener("click", () => { grid.classList.remove("clip"); more.hidden = true; });
+    more.addEventListener("click", () => { grid.classList.remove("clipped"); more.hidden = true; });
   }
 }
 function openLightbox(i) {
@@ -1236,42 +1166,6 @@ function countTo(el, value, format) {
   requestAnimationFrame(step);
 }
 
-/* ---------------- hero toy: poke counter + sound (off by default) ---------------- */
-let audioCtx = null, soundOn = false;
-function boing() {
-  if (!soundOn) return;
-  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-  const t = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain();
-  o.type = "sine";
-  o.frequency.setValueAtTime(420 + Math.random() * 120, t);
-  o.frequency.exponentialRampToValueAtTime(90, t + 0.32);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.35, t + 0.02);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
-  o.connect(g).connect(audioCtx.destination);
-  o.start(t); o.stop(t + 0.42);
-}
-function initToy() {
-  let pokes = 0;
-  try { pokes = +localStorage.getItem("kowl-pokes") || 0; } catch { /* private mode */ }
-  const out = $("#pokeCount");
-  out.textContent = commas(pokes);
-  $("#heroKowl").addEventListener("click", () => {
-    pokes++;
-    out.textContent = commas(pokes);
-    try { localStorage.setItem("kowl-pokes", pokes); } catch { /* private mode */ }
-    boing();
-  });
-  const snd = $("#sndBtn");
-  snd.addEventListener("click", () => {
-    soundOn = !soundOn;
-    snd.textContent = soundOn ? "🔊" : "🔇";
-    snd.setAttribute("aria-pressed", soundOn);
-    snd.setAttribute("aria-label", soundOn ? "sound is on" : "sound is off");
-    boing();
-  });
-}
-
 /* ---------------- chart + verify links (only when CHART_URL is set) ---------------- */
 function initChart() {
   if (!/^https:\/\//.test(CHART_URL)) return;
@@ -1285,31 +1179,13 @@ function initChart() {
   ].map(([n, u]) => `<a class="btn ghost" href="${u}" target="_blank" rel="noopener">${n} ↗</a>`).join("");
 }
 
-/* ---------------- nav highlight ---------------- */
-function initNav() {
-  const links = $$(".topnav a, .tabbar a");
-  const ids = [...new Set(links.map((a) => a.getAttribute("href").slice(1)))];
-  const secs = ids.map((id) => document.getElementById(id)).filter(Boolean);
-  if (!("IntersectionObserver" in window)) return;
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => {
-      if (!en.isIntersecting) return;
-      const id = en.target.id;
-      links.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + id));
-    });
-  }, { rootMargin: "-40% 0px -55% 0px" });
-  secs.forEach((s) => io.observe(s));
-}
-
 /* ---------------- boot ---------------- */
 document.addEventListener("DOMContentLoaded", () => {
   initLinks();
   initCA();
   initTicker();
-  initHero();
   initTimeline();
   initPayroll();
-  initToy();
   initChart();
   initPfp();
   initTranslator();
@@ -1321,5 +1197,4 @@ document.addEventListener("DOMContentLoaded", () => {
   initModals();
   initLightbox();
   initMemes();
-  initNav();
 });

@@ -23,7 +23,7 @@
 <h2>what we collect</h2>
 <ul>
   <li><b>google sign-in:</b> when you sign in with Google we receive your Google account id, email address, name and profile picture from Google. We keep the account id and email to run your kowl account. Your email is never shown publicly. Your public name is the display name you choose (default "kowl-xxxx").</li>
-  <li><b>things you submit:</b> memes you upload, their titles, X post links you submit as bagwork, the X handle you link, and Solana addresses you withdraw to.</li>
+  <li><b>things you submit:</b> memes you upload, their titles, X post links you submit (to link your X or as bagwork), the X handle you link, and Solana addresses you withdraw to. To check an X post automatically we fetch that one public post (its author, text and date) and re-check it later to see if it was deleted.</li>
   <li><b>payroll records:</b> points, balances, payday credits and withdrawals. Withdrawals are Solana transactions and are public on the blockchain. The site lists recent ones with your display name.</li>
   <li><b>engagement counts:</b> views, shares and downloads of memes on this site are counted once per visitor per day. For visitors who aren't signed in we store a salted hash of the IP address and browser user agent, not the IP itself.</li>
   <li><b>security logs:</b> our server keeps short-lived request logs and rate-limit counters to stop abuse.</li>
@@ -33,7 +33,7 @@
 <ul>
   <li>we don't sell or rent your data.</li>
   <li>we don't use advertising trackers.</li>
-  <li>we never ask for your seed phrase or private keys, and we never read your X account.</li>
+  <li>we never ask for your seed phrase or private keys, and we never log in to or post from your X account: we only read the public posts you submit.</li>
 </ul>
 
 <h2>who processes it</h2>

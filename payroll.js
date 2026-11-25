@@ -36,7 +36,8 @@ async function api(path, body, method) {
   let data = null;
   try { data = await res.json(); } catch { /* not json */ }
   if (res.status === 401 && pr.token) { dropSession(); throw new ApiError("your session ran out. sign in again."); }
-  if (!res.ok || (data && data.ok === false)) throw new ApiError((data && data.error) || `payroll said ${res.status}. try again in a sec.`);
+  // decisions like a rejected bagwork come back as {ok:false, status, reason} with HTTP 200: those are results, not errors
+  if (!res.ok || (data && data.ok === false && data.error)) throw new ApiError((data && (data.error || data.reason)) || `payroll said ${res.status}. try again in a sec.`);
   return data;
 }
 
@@ -276,12 +277,13 @@ async function loadMe() {
 }
 const MEME_ST = { pending: "in review", approved: "live", rejected: "rejected", hidden: "hidden" };
 const WD_ST = { review: "in review", pending: "pending", sent: "sent", confirmed: "confirmed", failed: "failed · refunded", rejected: "rejected · refunded" };
+const BAG_ST = { accepted: "credited", pending: "checking", rejected: "rejected", revoked: "revoked" };
 function renderAccount() {
   const me = pr.token ? pr.me : null, a = me && me.account;
   $("#meAvatar").src = (a && safeImg(a.avatar)) || "img/kowl-head-256.png";
   $("#meName").textContent = a ? a.name || "kowl" : "not signed in";
   $("#meSub").textContent = a
-    ? a.banned ? "this account is frozen. ask @kowlcoin." : `kowl since ${new Date(toMs(a.joined_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}${a.x_status === "verified" && a.x_handle ? ` · @${xHandle(a.x_handle)}` : ""}`
+    ? a.banned ? "this account is frozen. ask @KowlFun." : `kowl since ${new Date(toMs(a.joined_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}${a.x_status === "verified" && a.x_handle ? ` · @${xHandle(a.x_handle)}` : ""}`
     : "sign in to see your kowl balance";
   $("#nameEdit").hidden = !a;
   $("#signOut").hidden = !a;
@@ -301,21 +303,26 @@ function renderAccount() {
 function renderX(a) {
   if (!a) return;
   const st = a.x_status || "none", state = $("#xState"), form = $("#xForm");
+  const vform = $("#xVerifyForm");
   if (st === "verified") {
-    state.innerHTML = `<p class="x-ok">✓ linked: <b>@${esc(xHandle(a.x_handle))}</b>. your bagwork can be credited.</p>`;
+    state.innerHTML = `<p class="x-ok">✓ linked: <b>@${esc(xHandle(a.x_handle))}</b>. paste your bagwork below.</p>`;
     form.hidden = true;
+    vform.hidden = true;
   } else if (st === "pending" && a.x_code) {
-    state.innerHTML = `<p>put this in your X bio, then wait for a human to check it (usually within a day):</p>
-      <div class="xcode"><code>${esc(a.x_code)}</code><button class="mini-btn" type="button" id="xCopy">copy</button></div>
-      <p class="mut small">checking @${esc(xHandle(a.x_handle))}. wrong handle? enter it again below.</p>`;
+    const intent = `https://x.com/intent/post?text=${encodeURIComponent(`linking my kowl: ${a.x_code} 🫠`)}`;
+    state.innerHTML = `<p>post any tweet from <b>@${esc(xHandle(a.x_handle))}</b> with this code in it, then paste the tweet's link below. it's verified instantly (you can delete the tweet after).</p>
+      <div class="xcode"><code>${esc(a.x_code)}</code><button class="mini-btn" type="button" id="xCopy">copy</button><a class="mini-btn" href="${esc(intent)}" target="_blank" rel="noopener">post it ↗</a></div>
+      <p class="mut small">wrong handle? enter it again to get a new code.</p>`;
     form.hidden = false;
-    $("#xCopy").onclick = async () => { const ok = await copy(a.x_code); toast(ok ? "code copied. paste it in your X bio." : "copy failed. type it."); };
+    vform.hidden = false;
+    $("#xCopy").onclick = async () => { const ok = await copy(a.x_code); toast(ok ? "code copied. put it in a tweet." : "copy failed. type it."); };
   } else {
-    state.innerHTML = "<p>link your X so a human can credit your bagwork. you'll get a code to put in your bio.</p>";
+    state.innerHTML = "<p>link your X in 10 seconds: get a code, tweet it, paste the link. then your bagwork is credited automatically.</p>";
     form.hidden = false;
+    vform.hidden = true;
   }
   const ok = st === "verified" && !a.banned;
-  ["#bagUrl", "#bagNote", "#bagBtn"].forEach((s) => { $(s).disabled = !ok; });
+  ["#bagUrl", "#bagBtn"].forEach((s) => { $(s).disabled = !ok; });
   $("#bagForm").classList.toggle("locked", !ok);
   if (!ok && !$("#bagMsg").textContent) setMsg($("#bagMsg"), "link your X first (above). bagwork only counts from your own linked account.", "info");
   if (ok && $("#bagMsg").classList.contains("info") && /link your X first/.test($("#bagMsg").textContent)) setMsg($("#bagMsg"), "");
@@ -339,11 +346,14 @@ function renderMeList() {
   } else if (tab === "bagwork") {
     html = list("bagwork").map((b) => {
       const link = X_STATUS.test(b.url || "") ? b.url : "";
+      const meta = b.status === "rejected" || b.status === "revoked" ? esc(b.reason || b.status)
+        : b.status === "pending" ? "checking it with X. this takes a few seconds (longer if X is slow)."
+        : esc(ago(b.created_at));
       return `<div class="me-meme"><div class="mthumb"><span class="mthumb-ph">𝕏</span></div>
-        <div>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">post ↗</a>` : "post"}${pill(b.status, b.status === "pending" ? "in review" : b.status)}
-        <span class="meta">${b.status === "rejected" ? esc(b.reason || "rejected") : esc(b.note || ago(b.created_at))}</span></div>
-        <div class="amt">${b.status === "approved" ? `+${commas(num(b.points))}<small>pts</small>` : "–"}</div></div>`;
-    }).join("") || '<p class="empty">no bagwork yet. link your X, post with "paid by $KOWL" + the Paid Partnership label, submit the link.</p>';
+        <div>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">post ↗</a>` : "post"}${pill(b.status, BAG_ST[b.status] || b.status)}
+        <span class="meta">${meta}</span></div>
+        <div class="amt">${b.status === "accepted" && num(b.points) ? `+${commas(num(b.points))}<small>pts</small>` : "–"}</div></div>`;
+    }).join("") || '<p class="empty">no bagwork yet. link your X, post something that starts with "paid by $KOWL" (Paid Partnership label on), paste the link.</p>';
   } else if (tab === "withdrawals") {
     html = list("withdrawals").map((w) => {
       const sig = SOL_SIG.test(w.sig || "") ? w.sig : "";
@@ -405,18 +415,42 @@ function initMe() {
       if (pr.me && pr.me.account) Object.assign(pr.me.account, { x_handle: h, x_status: "pending", x_code: r.code });
       setMsg(msg, "");
       renderAccount();
+      $("#xUrl").focus();
     } catch (err) { setMsg(msg, err.message, "err"); }
   });
-  // bagwork
+  $("#xVerifyForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const url = $("#xUrl").value.trim(), msg = $("#xMsg"), btn = $("#xVerifyBtn");
+    if (!X_STATUS.test(url)) { setMsg(msg, "paste the link to your tweet with the code. it looks like x.com/you/status/123…", "err"); return; }
+    btn.disabled = true;
+    try {
+      const r = await api("/api/me/x/verify", { url });
+      if (r && r.account && pr.me) pr.me.account = r.account;
+      else if (pr.me && pr.me.account) pr.me.account.x_status = "verified";
+      $("#xUrl").value = "";
+      setMsg(msg, "linked 🫠 your bagwork now counts automatically.", "ok");
+      renderAccount();
+      loadMe();
+    } catch (err) { setMsg(msg, err.message, "err"); }
+    finally { btn.disabled = false; }
+  });
+  // bagwork: checked automatically by the server
+  let bagPoll = 0;
   $("#bagForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const url = $("#bagUrl").value.trim(), note = $("#bagNote").value.trim(), msg = $("#bagMsg");
+    const url = $("#bagUrl").value.trim(), msg = $("#bagMsg");
     if (!X_STATUS.test(url)) { setMsg(msg, "that's not a link to an X post. it looks like x.com/you/status/123…", "err"); return; }
     $("#bagBtn").disabled = true;
     try {
-      await api("/api/bagwork", { url, note });
-      setMsg(msg, "submitted. a human checks it: starts with \"paid by $KOWL\", Paid Partnership label on, your account. then up to 20 points.", "ok");
-      $("#bagUrl").value = ""; $("#bagNote").value = "";
+      const r = (await api("/api/bagwork", { url })) || {};
+      if (r.status === "accepted") setMsg(msg, `credited: +${commas(num(r.points) || 8)} points 🫠 delete the post and they go too.`, "ok");
+      else if (r.status === "rejected" || r.status === "paused") setMsg(msg, `not credited: ${r.reason || "it didn't pass the check"}.`, "err");
+      else {
+        setMsg(msg, "got it. X is slow right now, so it's queued: it'll be checked automatically in a minute.", "info");
+        clearTimeout(bagPoll);
+        bagPoll = setTimeout(loadMe, 30000);
+      }
+      $("#bagUrl").value = "";
       pr.meTab = "bagwork";
       $$("#meTabs button").forEach((x) => x.classList.toggle("on", x.dataset.me === "bagwork"));
       loadMe();
