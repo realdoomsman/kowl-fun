@@ -6,6 +6,7 @@ const LINKS = {
   x: "https://x.com/KowlFun",        // official X: @KowlFun. (@kowl is an unrelated real person: never link it)
   telegram: "#",                     // https://t.me/...
   pump: "#",                         // https://pump.fun/coin/<CA>
+  twitch: "https://twitch.tv/kowlfun", // kowl live
 };
 const API_BASE = "https://api.kowl.fun"; // kowl payroll API. "" = payroll shows "opens at launch"
 const GOOGLE_CLIENT_ID = "108080030634-0gj8lmso0csho8ok0psbeft7ehhuf3n8.apps.googleusercontent.com"; // Google Identity Services web client. authorised origins: kowl.fun, www.kowl.fun, localhost:8787/8790
@@ -115,38 +116,6 @@ const fontsReady = (() => {
     .map((f) => document.fonts.load(f).catch(() => null))));
 })();
 
-/* ---------------- nav ---------------- */
-function initNav() {
-  const burger = $("#burger"), links = $("#navLinks");
-  const close = () => { links.classList.remove("open"); burger.setAttribute("aria-expanded", "false"); };
-  burger.addEventListener("click", () => {
-    const open = !links.classList.contains("open");
-    links.classList.toggle("open", open);
-    burger.setAttribute("aria-expanded", String(open));
-  });
-  links.addEventListener("click", (e) => { if (e.target.closest("a")) close(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-  if (!("IntersectionObserver" in window)) return;
-  const map = new Map($$("a", links).map((a) => [a.getAttribute("href").slice(1), a]));
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => {
-      if (!en.isIntersecting) return;
-      $$("a", links).forEach((a) => a.classList.remove("on"));
-      const a = map.get(en.target.id);
-      if (a) a.classList.add("on");
-    });
-  }, { rootMargin: "-45% 0px -50% 0px" });
-  $$("main > section[id]").forEach((s) => io.observe(s));
-}
-function initReveal() {
-  const els = $$(".reveal");
-  if (REDUCED || !("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
-  }, { rootMargin: "0px 0px -8% 0px" });
-  els.forEach((e) => io.observe(e));
-}
-
 /* ---------------- the chant ---------------- */
 const CHANT = [
   "every KOL is a kowl", "KOLs get paid in secret", "kowls get paid in public", "don't get kowl'd",
@@ -183,7 +152,9 @@ function initCA() {
 }
 
 /* =====================================================================
-   the shrine: 2D cutout first (light), the 3D kowl on first interaction
+   kowl's room: the scene is the site. every feature lives in an object;
+   clicking one flies the camera in and opens its panel. room.js draws the
+   3D (lazy module, WebGL2); without it the same room is a still image map.
    ===================================================================== */
 const POSES = {
   gm: ["gm", "gm to my 840k bots", "gm. anyway, this is the one"],
@@ -200,101 +171,503 @@ const POSES = {
   facepalm: ["password was kowl123", "i clicked the free airdrop link", "signed whatever popped up"],
 };
 const POKE_POSES = Object.keys(POSES);
-const shrine = { k3d: null, loading: false, pokes: 0, bubbleT: 0, exprT: 0, visible: true };
-try { shrine.pokes = +localStorage.getItem("kowl-pokes") || 0; } catch { /* private mode */ }
+const IDLE = [
+  ["gm chat", "gm"], ["chat is this real", "sus"], ["who's still holding?", "sus"], ["been watching this one for a while", "this-is-the-one"],
+  ["3:00pm. you know what to do.", "shill"], ["i'm not paid. (i am. it's on the laptop.)", "rich"], ["don't look at the sticky note", "deleted"],
+  ["the mirror says i'm handsome", "gm"], ["anyone want pizza? it's an alpha slice", "derp"], ["poke me. i dare you.", "send-it"],
+];
+// every object: its handwritten label, what it is, and the panel it opens (or what it does)
+const OBJ = {
+  laptop: { label: "the laptop", sub: "kowl payroll", panel: "laptop" },
+  phone: { label: "kowl's phone", sub: "today's 3:00pm call", panel: "phone" },
+  clock: { label: "it's always 3:00pm", sub: "today's call", panel: "phone" },
+  tv: { label: "the TV", sub: "kowl's AMA + shorts", panel: "tv" },
+  wall: { label: "the polaroid wall", sub: "the meme vault", panel: "wall" },
+  mirror: { label: "the mirror", sub: "get your kowl", panel: "mirror" },
+  door: { label: "the door", sub: "join the order", panel: "door" },
+  cert: { label: "blue check certificate", sub: "your kowl card", panel: "door" },
+  note: { label: "\"seed phrase\"", sub: "the commandments", panel: "note" },
+  trash: { label: "deleted tweets", sub: "the KOL dictionary", panel: "trash" },
+  mon2: { label: "the alpha group", sub: "chat · bingo · quiz", panel: "alpha" },
+  mon1: { label: "the chart", sub: "fake shill maker", panel: "shill" },
+  chain: { label: "the gold chain", sub: "the hierarchy", panel: "chain" },
+  window: { label: "the window", sub: "kowl live · X", panel: "window" },
+  neon: { label: "kowl live", sub: "the stream", panel: "window" },
+  safe: { label: "the safe", sub: "coin not live yet", panel: "safe" },
+  bed: { label: "the bed", sub: "mental health break", toy: "bed" },
+  pizza: { label: "pizza", sub: "an alpha slice", toy: "pizza" },
+  drinks: { label: "MELT energy", sub: "0% spine", toy: "drinks" },
+  ring: { label: "the ring light", sub: "content mode", toy: "ring" },
+  kowl: { label: "kowl", sub: "poke him · drag him · throw him" },
+};
+const PANEL_OBJ = { laptop: "laptop", phone: "phone", tv: "tv", wall: "wall", mirror: "mirror", door: "door", note: "note", trash: "trash", alpha: "mon2", shill: "mon1", chain: "chain", window: "window", safe: "safe" };
+const PANEL_HASH = { laptop: "payroll", phone: "call", tv: "tv", wall: "vault", mirror: "mirror", door: "order", note: "commandments", trash: "lexicon", alpha: "alpha", shill: "shill", chain: "chain", window: "live", safe: "coin" };
+const HASH_PANEL = {
+  ...Object.fromEntries(Object.entries(PANEL_HASH).map(([p, h]) => [h, p])),
+  sanctum: "laptop", initiation: "laptop", bagPanel: "laptop", board: "laptop", congregation: "laptop", mission: "phone", creed: "door",
+  card: "door", rituals: "alpha", hierarchy: "chain", stream: "window", ca: "safe",
+};
+const R = { room: null, mode: "loading", panel: null, pokes: 0, bubbleT: 0, lastSay: 0, hover: null, hoverX: 0, hoverY: 0, slow: 0, lastFocus: null, stills: null };
+try { R.pokes = +localStorage.getItem("kowl-pokes") || 0; } catch { /* private mode */ }
+const sfx = (n) => window.SFX && window.SFX.play(n);
+const isDesk = () => innerWidth > 860 && innerHeight > 520;
 
-function say(text, sec = 2.6) {
+function say(text, sec = 2.8) {
   const b = $("#bubble");
   b.textContent = text;
   b.hidden = false;
-  b.style.animation = "none"; void b.offsetWidth; b.style.animation = "";
-  if (shrine.k3d) {
-    const [x, y] = shrine.k3d.projectHead();
-    const st = $("#altarStage").getBoundingClientRect();
-    b.style.left = Math.min(Math.max(x / st.width, .15), .62) * 100 + "%";
-    b.style.top = Math.max(2, (y / st.height) * 100 - 16) + "%";
-  }
-  clearTimeout(shrine.bubbleT);
-  shrine.bubbleT = setTimeout(() => { b.hidden = true; }, sec * 1000);
-  shrine.k3d && shrine.k3d.talk(Math.min(2, text.length / 14));
+  b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+  clearTimeout(R.bubbleT);
+  R.bubbleT = setTimeout(() => { b.hidden = true; }, sec * 1000);
+  R.lastSay = Date.now();
+  R.room && R.room.talk(Math.min(2.2, text.length / 14));
 }
+function express(pose, sec = 2.6) { R.room && R.room.setExpression(pose, sec); }
 function countPoke(n, melting) {
-  shrine.pokes = n;
+  R.pokes = n;
   try { localStorage.setItem("kowl-pokes", String(n)); } catch { /* private mode */ }
-  $("#pokeCount").textContent = commas(n);
-  $("#pokeHint").classList.add("gone");
-  if (melting) { say("🫠", 4.6); return; }
+  hideHint();
+  if (melting) { say("🫠", 5); sfx("melt"); return; }
+  sfx("squish");
   const pose = pick(POKE_POSES);
   say(pick(POSES[pose]));
-  if (shrine.k3d) {
-    shrine.k3d.setExpression(pose);
-    clearTimeout(shrine.exprT);
-    shrine.exprT = setTimeout(() => shrine.k3d && shrine.k3d.setExpression("idle"), 2600);
-  }
+  express(pose, 2.6);
   return pose;
 }
-function poke2d(e) {
-  wake3d();
-  const n = shrine.pokes + 1, melting = n % 7 === 0;
-  const pose = countPoke(n, melting);
-  const img = $("#kowl2d");
-  img.src = IMG(melting ? "melted" : pose);
-  img.classList.remove("poked"); void img.offsetWidth; img.classList.add("poked");
-  clearTimeout(shrine.exprT);
-  shrine.exprT = setTimeout(() => { img.src = IMG("gm"); }, melting ? 3600 : 2600);
-  melt(...evPoint(e), melting ? 10 : 3);
+
+/* ---- toys: things that don't open a panel, they just make kowl do something ---- */
+const TOYS = {
+  bed() { say("taking a break from CT for mental health 🙏", 3.5); sfx("snore"); if (R.room) { R.room.sleep(true); setTimeout(() => R.room.sleep(false), 6500); } },
+  pizza() { say(pick(["that's an alpha slice. you're late.", "long-term hold (it's from tuesday)", "the missing slice was a paid partnership"])); express("high", 2.4); sfx("poke"); },
+  drinks() { say(pick(["MELT energy: 0% spine, 100% cope", "can number 14. i'm fine.", "sponsored. (it's disclosed. look, a kowl.)"])); sfx("can"); R.room && R.room.poke(); },
+  ring() { say(pick(["lighting is everything. so is the paid partnership toggle.", "content mode: on", "is my blue check visible? the sticker keeps peeling"])); express("gm", 2.4); sfx("switch"); },
+};
+
+/* ---- the hover label: handwritten, pinned above the thing ---- */
+function showLabel(key) {
+  const l = $("#label"), o = OBJ[key];
+  if (!o) { l.classList.remove("on"); return; }
+  $("b", l).textContent = o.label;
+  $("span", l).textContent = o.sub;
+  l.classList.add("on");
 }
+function placeLabel() {
+  const l = $("#label");
+  if (!R.hover || !l.classList.contains("on")) return;
+  // kowl's own label would sit under his speech bubble: he can introduce himself
+  l.classList.toggle("mute", R.hover === "kowl" && !$("#bubble").hidden);
+  let p = null;
+  if (R.room) p = R.room.labelAt(R.hover);
+  if (!p) return;
+  const [x, y] = p;
+  l.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+}
+function placeBubble() {
+  const b = $("#bubble");
+  if (b.hidden) return;
+  let x, y;
+  if (R.room) [x, y] = R.room.projectHead();
+  else if (R.stills) { const r = stillRect("kowl"); if (!r) return; x = r.left + r.width / 2; y = r.top; }
+  else return;
+  b.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+}
+function uiLoop() {
+  placeLabel();
+  placeBubble();
+  requestAnimationFrame(uiLoop);
+}
+
+/* ---- panels ---- */
+const PANEL_HOOKS = {
+  laptop() { sfx("type"); if (typeof loadMe === "function") loadMe(); },
+  phone() { sfx("ping"); },
+  door() { printCard(); },
+  shill() { if (!shillState.drawn) { shillState.drawn = true; drawShill(); } },
+  alpha() { chatStart(); },
+  window() { skyLine(); },
+  safe() { sfx("safe"); express("sus", 2.5); },
+  tv() { sfx("switch"); },
+};
+function openPanel(name, key) {
+  const p = $("#p-" + name);
+  if (!p) return;
+  closeIndex();
+  if (R.panel === name) return;
+  if (R.panel) hidePanel(R.panel);
+  key = key || PANEL_OBJ[name];
+  R.lastFocus = R.lastFocus || document.activeElement;
+  R.panel = name;
+  p.hidden = false;
+  p.classList.remove("out");
+  // grow out of the object it belongs to
+  const pr = p.getBoundingClientRect();
+  let ox = pr.width / 2, oy = pr.height / 2;
+  const r = R.room ? R.room.rectOf(key) : stillRect(key);
+  if (r) {
+    const cx = (r.x != null ? r.x + r.w / 2 : r.left + r.width / 2), cy = (r.y != null ? r.y + r.h / 2 : r.top + r.height / 2);
+    ox = cx - pr.left; oy = cy - pr.top;
+  }
+  p.style.transformOrigin = `${Math.round(ox)}px ${Math.round(oy)}px`;
+  p.classList.remove("in"); void p.offsetWidth; p.classList.add("in");
+  document.body.classList.add("has-panel");
+  document.body.dataset.panel = name;
+  R.hover = null; showLabel(null);
+  if (R.room) { R.room.flyTo(key); setShift(); }
+  sfx("open");
+  hideHint();
+  PANEL_HOOKS[name] && PANEL_HOOKS[name]();
+  if (location.hash !== "#" + PANEL_HASH[name] && !/^#k\//.test(location.hash)) history.replaceState(null, "", "#" + PANEL_HASH[name]);
+  const h = $("h2", p);
+  if (h) { h.tabIndex = -1; setTimeout(() => h.focus({ preventScroll: true }), 30); }
+}
+function hidePanel(name) {
+  const p = $("#p-" + name);
+  if (!p) return;
+  p.classList.remove("in");
+  p.classList.add("out");
+  $$("video", p).forEach((v) => v.pause());
+  setTimeout(() => { if (R.panel !== name) { p.hidden = true; p.classList.remove("out"); } }, 220);
+}
+function closePanel() {
+  if (!R.panel) return;
+  hidePanel(R.panel);
+  if (R.panel === "alpha") chatStop();
+  R.panel = null;
+  document.body.classList.remove("has-panel");
+  delete document.body.dataset.panel;
+  if (R.room) { R.room.flyHome(); R.room.setShift(0, 0); }
+  sfx("close");
+  if (location.hash && !/^#k\//.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
+  const f = R.lastFocus;
+  R.lastFocus = null;
+  if (f && f.focus && document.contains(f) && f !== document.body) f.focus({ preventScroll: true });
+}
+function setShift() {
+  if (!R.room) return;
+  if (!R.panel) { R.room.setShift(0, 0); return; }
+  const p = $("#p-" + R.panel).getBoundingClientRect();
+  if (isDesk()) R.room.setShift(Math.min(p.width, innerWidth * 0.6) / 2, 0);
+  else R.room.setShift(0, Math.max(0, innerHeight / 2 - (innerHeight - p.height) / 2 + 10));
+}
+function pickThing(key, kind) {
+  const o = OBJ[key];
+  if (!key) { if (R.panel) closePanel(); return; }
+  if (!o) return;
+  hideHint();
+  if (o.toy) { if (R.panel) closePanel(); TOYS[o.toy](); return; }
+  if (!o.panel) return;
+  if (kind === "touch" || kind === "pen") {
+    // on touch: show the label and the glow for a beat, then go in
+    R.hover = key; showLabel(key); R.room && R.room.hover(key);
+    setTimeout(() => { R.room && R.room.hover(null); openPanel(o.panel, key); }, 320);
+    return;
+  }
+  openPanel(o.panel, key);
+}
+
+/* ---- the index (menu): every object, for keyboards, screen readers and the impatient ---- */
+function openIndex() { document.body.classList.add("index-open"); $("#menuBtn").setAttribute("aria-expanded", "true"); const a = $("#index a"); a && a.focus({ preventScroll: true }); }
+function closeIndex() { if (!document.body.classList.contains("index-open")) return; document.body.classList.remove("index-open"); $("#menuBtn").setAttribute("aria-expanded", "false"); }
+function initIndex() {
+  $("#menuBtn").addEventListener("click", () => (document.body.classList.contains("index-open") ? closeIndex() : openIndex()));
+  $$("[data-open]").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    openPanel(a.dataset.open);
+    if (a.dataset.vaultOpen) $(`[data-vault="${a.dataset.vaultOpen}"]`).click();
+  }));
+  $$("[data-close]").forEach((b) => { if (b.closest(".panel")) b.addEventListener("click", closePanel); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if ($$(".modal").some((m) => !m.hidden)) return;
+    if (document.body.classList.contains("index-open")) { closeIndex(); $("#menuBtn").focus(); return; }
+    closePanel();
+  });
+  document.addEventListener("pointerdown", (e) => {
+    if (document.body.classList.contains("index-open") && !e.target.closest("#index, #menuBtn")) closeIndex();
+  });
+  // in-page links from the old sections (#mission, #vault, #bagPanel…) open the right object
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.dataset.open) return;
+    const h = a.getAttribute("href").slice(1);
+    if (HASH_PANEL[h]) { e.preventDefault(); closeModalsQuiet(); openPanel(HASH_PANEL[h]); }
+  });
+  addEventListener("hashchange", () => { const h = location.hash.slice(1); if (HASH_PANEL[h]) openPanel(HASH_PANEL[h]); });
+  addEventListener("resize", () => setShift());
+}
+function closeModalsQuiet() { $$(".modal").forEach((m) => { if (!m.hidden && m.id !== "oathModal") closeModal(m); }); }
+function routeOnLoad() {
+  const h = location.hash.slice(1);
+  if (HASH_PANEL[h]) openPanel(HASH_PANEL[h]);
+}
+
+/* ---- the first-time hint ---- */
+let hintT = 0;
+function showHint() {
+  let seen = false;
+  try { seen = !!localStorage.getItem("kowl-visited"); localStorage.setItem("kowl-visited", "1"); } catch { /* private mode */ }
+  if (seen && R.pokes) return;
+  $("#hint").hidden = false;
+  requestAnimationFrame(() => $("#hint").classList.add("on"));
+  hintT = setTimeout(hideHint, 15000);
+}
+function hideHint() {
+  const h = $("#hint");
+  if (h.hidden) return;
+  h.classList.remove("on");
+  clearTimeout(hintT);
+  setTimeout(() => { h.hidden = true; }, 400);
+}
+
+/* ---- the still fallback: the same room as an image map ---- */
+function stillRect(key) {
+  const b = $(`#hotLayer [data-key="${key}"]`);
+  return b ? b.getBoundingClientRect() : null;
+}
+async function startStill(reason) {
+  if (R.mode === "still") return;
+  R.mode = "still";
+  if (R.room) { R.room.pause(); R.room = null; }
+  document.body.classList.add("is-still");
+  document.body.classList.remove("is-3d");
+  $("#still").removeAttribute("aria-hidden");
+  try { R.stills = R.stills || await (await fetch("room/stills.json")).json(); } catch { R.stills = null; }
+  const build = () => {
+    const portrait = matchMedia("(orientation: portrait)").matches;
+    const rects = R.stills && R.stills[portrait ? "1080x1920" : "1920x1080"];
+    $("#stillBox").classList.toggle("portrait", portrait);
+    if (!rects) { $("#hotLayer").innerHTML = ""; return; }
+    const order = Object.keys(rects).filter((k) => OBJ[k]).sort((a, b) => rects[b][2] * rects[b][3] - rects[a][2] * rects[a][3]);
+    $("#hotLayer").innerHTML = order.map((k) => {
+      const [x, y, w, h] = rects[k], o = OBJ[k];
+      return `<button class="hs-btn" type="button" data-key="${k}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" aria-label="${esc(o.label + ": " + o.sub)}"><span class="hot-l"><b>${esc(o.label)}</b><small>${esc(o.sub)}</small></span></button>`;
+    }).join("");
+  };
+  build();
+  matchMedia("(orientation: portrait)").addEventListener("change", build);
+  $("#hotLayer").addEventListener("click", (e) => {
+    const b = e.target.closest(".hs-btn");
+    if (!b) return;
+    const k = b.dataset.key;
+    if (k === "kowl") { const n = R.pokes + 1; countPoke(n, n % 7 === 0); melt(...evPoint(e), n % 7 === 0 ? 10 : 3); return; }
+    pickThing(k, "mouse");
+  });
+  $("#hotLayer").addEventListener("pointerover", (e) => { const b = e.target.closest(".hs-btn"); if (b) sfx("hover"); });
+  finishLoading();
+  if (reason) console.info("kowl's room: still mode,", reason);
+}
+
+/* ---- the loader: kowl waking up ---- */
+let loadedOnce = false;
+function finishLoading() {
+  if (loadedOnce) return;
+  loadedOnce = true;
+  const L = $("#loader");
+  $("#loaderBar").style.width = "100%";
+  L.classList.add("awake");
+  $("#loaderT").textContent = "gm.";
+  $("#loaderS").textContent = R.mode === "still" ? "(the 3D room is asleep on this device. the doors all still work.)" : "come in. don't touch the seed phrase.";
+  setTimeout(() => {
+    L.classList.add("gone");
+    setTimeout(() => { L.hidden = true; }, 700);
+    document.body.classList.add("ready");
+    routeOnLoad();
+    if (!R.panel) {
+      showHint();
+      setTimeout(() => { if (!R.panel) { say(R.pokes ? "oh. you're back. gm." : "gm. click things. (poke me too.)", 3.4); express("gm", 3); } }, 600);
+    }
+  }, REDUCED ? 200 : 1100);
+}
+
+/* ---- the 3D room ---- */
 function webglOK() {
   try {
     const c = document.createElement("canvas");
     return !!(window.WebGL2RenderingContext && c.getContext("webgl2"));
   } catch { return false; }
 }
-function wake3d() {
-  if (shrine.loading || shrine.k3d) return;
-  shrine.loading = true;
-  if (!webglOK() || (navigator.connection && navigator.connection.saveData)) return;
-  const stage = $("#altarStage");
-  const canvas = document.createElement("canvas");
-  canvas.className = "shrine3d";
-  canvas.setAttribute("aria-label", "kowl, in 3D, on his altar. poke him.");
-  canvas.setAttribute("role", "img");
-  stage.prepend(canvas);
-  import("./shrine3d.js?v=4").then((m) => m.start({
-    canvas, model: "models/kowl.glb", reduced: REDUCED,
-    onPoke: (n, melting) => { countPoke(n, melting); const r = canvas.getBoundingClientRect(); melt(r.left + r.width / 2, r.top + r.height * .45, melting ? 10 : 3); },
-    onMelt: () => {},
-    onReady: () => { stage.classList.add("is3d"); },
-  })).then((k) => {
-    shrine.k3d = k;
-    k.pokes = shrine.pokes;
-    if (!shrine.visible || document.hidden) k.pause();
-  }).catch((err) => {
-    console.warn("shrine3d: staying 2D", err && err.message);
-    canvas.remove();
+async function bootRoom() {
+  const q = new URLSearchParams(location.search);
+  if (q.has("still")) return startStill("asked for it");
+  if (!webglOK()) return startStill("no WebGL2");
+  const small = matchMedia("(max-width: 760px), (max-height: 560px)").matches;
+  const weak = (navigator.deviceMemory && navigator.deviceMemory <= 3) || (navigator.connection && navigator.connection.saveData);
+  const mobile = small || matchMedia("(pointer: coarse)").matches;
+  const atlasUrl = small || weak ? "room/atlas-2k.webp" : "room/atlas-4k.webp";
+  const guard = setTimeout(() => { if (!R.room) startStill("took too long"); }, 25000);
+  try {
+    const m = await import("./room.js?v=5");
+    if (R.mode === "still") return;
+    const room = await m.start({
+      canvas: $("#room3d"), mobile, reduced: REDUCED, atlasUrl,
+      onProgress: (p) => { $("#loaderBar").style.width = Math.round(8 + p * 88) + "%"; },
+      onHover: (key, x, y, same) => {
+        if (R.panel && key) { R.hover = null; showLabel(null); return; }
+        if (!same) { R.hover = key; showLabel(key); if (key) sfx("hover"); }
+      },
+      onPick: (key, x, y, kind) => pickThing(key, kind),
+      onPoke: (n, melting) => { countPoke(n, melting); },
+      onKowl: (ev, v) => {
+        hideHint();
+        if (ev === "grab") { say(pick(["put me down!!", "unhand me, i'm verified", "this is not financial advice", "wheee"]), 1.8); sfx("poke"); }
+        else if (ev === "throw") { if (v > 1.5) sfx("whoosh"); }
+        else if (ev === "land") { sfx(v > 4 ? "thud" : "boing"); if (v > 3 && Date.now() - R.lastSay > 1500) say(pick(["ow", "i'm fine (i'm not)", "-90%", "that's a dip. just a dip.", "rugged"]), 1.6); }
+        else if (ev === "bump") sfx("thud");
+        else if (ev === "respawn") { say("i got rugged off the map", 2.6); sfx("whoosh"); }
+        else if (ev === "hop") sfx("boing");
+        else if (ev === "home") say(pick(["anyway. gm.", "where was i. oh right: this is the one.", "back to work (posting)"]), 2.4);
+        else if (ev === "reformed") { say("i'm back. bags still down.", 2.6); sfx("reform"); }
+      },
+      onFps: (fps, quality) => {
+        // a device that can't hold ~18fps at the lowest resolution gets the image map
+        if (fps < 18 && quality <= 0.56) { if (++R.slow >= 3) startStill("too slow"); } else R.slow = 0;
+      },
+    });
+    clearTimeout(guard);
+    if (R.mode === "still") { room.pause(); return; }
+    R.room = room;
+    R.mode = "3d";
+    room.pokes = R.pokes;
+    document.body.classList.add("is-3d");
+    feedRoom();
+    document.addEventListener("visibilitychange", () => { if (!R.room) return; if (document.hidden) R.room.pause(); else R.room.resume(); });
+    finishLoading();
+  } catch (err) {
+    clearTimeout(guard);
+    console.warn("kowl's room: falling back to the still", err && err.message);
+    startStill("3D failed");
+  }
+}
+// the screens in the room show live things: payroll stats, today's call, the TV
+function feedRoom() {
+  if (!R.room) return;
+  Promise.all(["video/kowl_ama.jpg", "video/clip_who_paid_you.jpg", "video/clip_the_one.jpg", "video/clip_seed_phrase.jpg"].map((s) => loadImg(s).catch(() => null)))
+    .then((imgs) => R.room && R.room.setTV(imgs.filter(Boolean)));
+  if (mission.m) loadImg(mission.thumb).then((img) => R.room && R.room.setMission(mission.m, img)).catch(() => {});
+  if (typeof pr !== "undefined" && pr.stats) R.room.setStats(pr.stats);
+}
+
+/* ---- idle chatter ---- */
+function initChatter() {
+  setInterval(() => {
+    if (document.hidden || R.panel || !loadedOnce || Date.now() - R.lastSay < 14000) return;
+    if (R.room && R.room.kowlMode() !== "seat") return;
+    const [line, pose] = pick(IDLE);
+    say(line, 3);
+    express(pose, 3);
+  }, 9000);
+}
+
+/* ---- easter eggs: type "nfa", "gm", "kowl123" or "wagmi" anywhere ---- */
+function initEggs() {
+  let buf = "";
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.key.length !== 1) return;
+    if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
+    buf = (buf + e.key.toLowerCase()).slice(-12);
+    if (buf.endsWith("nfa")) { buf = ""; nfa(); }
+    else if (buf.endsWith("kowl123")) {
+      buf = "";
+      openPanel("safe");
+      $("#safeNote").textContent = "password accepted. the safe is empty. kowl spent it all on MELT energy drinks. (this is why you don't use kowl123.)";
+      say("HOW did you know my password", 3); express("facepalm", 3);
+    } else if (buf.endsWith("wagmi")) { buf = ""; say("we're not all gonna make it. i am, though.", 3); express("rich", 3); }
+    else if (buf.endsWith("gm") && !buf.endsWith("ngm")) { buf = ""; say("gm 🫠", 2); express("gm", 2.4); }
   });
 }
-function initShrine() {
-  $("#pokeCount").textContent = commas(shrine.pokes);
-  if (shrine.pokes) $("#pokeHint").classList.add("gone");
-  $("#altarPoke").addEventListener("click", poke2d);
-  const once = () => {
-    ["pointermove", "pointerdown", "touchstart", "keydown", "scroll"].forEach((t) => removeEventListener(t, once));
-    wake3d();
-  };
-  ["pointermove", "pointerdown", "touchstart", "keydown", "scroll"].forEach((t) => addEventListener(t, once, { passive: true }));
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(([en]) => {
-      shrine.visible = en.isIntersecting;
-      if (!shrine.k3d) return;
-      if (en.isIntersecting && !document.hidden) shrine.k3d.resume(); else shrine.k3d.pause();
-    }).observe($("#altar"));
-  }
-  document.addEventListener("visibilitychange", () => {
-    if (!shrine.k3d) return;
-    if (document.hidden) shrine.k3d.pause(); else if (shrine.visible) shrine.k3d.resume();
+function nfa() {
+  const s = $("#stamp");
+  s.hidden = false;
+  s.classList.remove("hit"); void s.offsetWidth; s.classList.add("hit");
+  sfx("stamp");
+  say("not financial advice 🫠", 3);
+  express("nfa", 3);
+  melt(innerWidth / 2, innerHeight / 2, 14);
+  setTimeout(() => { s.hidden = true; }, 1900);
+}
+
+/* ---- sound ---- */
+function initSound() {
+  const b = $("#soundBtn");
+  const sync = () => { const on = window.SFX && window.SFX.on; b.setAttribute("aria-pressed", String(!!on)); b.setAttribute("aria-label", on ? "sound on. turn sound off" : "sound off. turn sound on"); b.classList.toggle("on", !!on); };
+  b.addEventListener("click", () => { window.SFX && window.SFX.toggle(); sync(); });
+  document.addEventListener("kowl-sound", sync);
+  sync();
+}
+
+/* ---- the TV: channels ---- */
+function initTV() {
+  const v = $("#sermonVideo");
+  $("#channels").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-src]");
+    if (!b) return;
+    $$("#channels button").forEach((x) => x.classList.toggle("on", x === b));
+    v.poster = b.dataset.poster;
+    v.src = b.dataset.src;
+    $("#t-tv").innerHTML = `${esc(b.dataset.title)} <small>${esc(b.dataset.len)}</small>`;
+    sfx("switch");
+    v.play().catch(() => {});
   });
-  setTimeout(() => { if (!shrine.pokes) say("gm. poke me.", 3); }, 1400);
+}
+
+/* ---- the alpha group chat (a dramatisation, all made-up kowls) ---- */
+const ALPHA = [
+  ["alpha kowl 🐋", "ok team. 3:00pm sharp. same chart, same words"], ["0xkowl", "who dumps first this time"], ["kowl", "not me 🫡"],
+  ["kowlcapital", "remember to say nfa"], ["alpha kowl 🐋", "and DON'T say it's paid"], ["kowlresearch", "47 of us posting the same chart is so organic"],
+  ["kowl", "been watching this one for a while"], ["notkowl", "you bought it 4 minutes ago"], ["kowl", "a while"], ["kowl_eth", "my tweet is drafted. thread 1/27"],
+  ["alpha kowl 🐋", "2:59. hold"], ["kowl", "posted"], ["alpha kowl 🐋", "KOWL IT'S 2:58"], ["kowlcalls", "he always does this"], ["kowl", "i'm just a holder"],
+  ["0xkowl", "chart's -60%"], ["kowl", "zoom out"], ["kowl_eth", "who's still holding"], ["kowl", "*deletes tweet*"], ["system", "kowl changed the group name to \"mental health break\""],
+  ["alpha kowl 🐋", "meanwhile those kowls just say \"paid by $KOWL\" on everything"], ["kowlresearch", "disgusting. honest."], ["kowl", "can i join them"], ["system", "kowl left the group"],
+];
+let chatI = 0, chatTimer = 0;
+function chatPush() {
+  const box = $("#tgChat");
+  const [who, msg] = ALPHA[chatI++ % ALPHA.length];
+  const el = document.createElement("div");
+  el.className = who === "system" ? "tg-sys" : "tg-msg" + (who === "kowl" ? " me" : "");
+  el.innerHTML = who === "system" ? esc(msg) : `<b style="--h:${(who.length * 47) % 360}">${esc(who)}</b><span>${esc(msg)}</span><i>${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</i>`;
+  box.appendChild(el);
+  while (box.children.length > 40) box.firstChild.remove();
+  box.scrollTop = box.scrollHeight;
+  if (who === "kowl") sfx("ping");
+}
+function chatStart() {
+  if (!$("#tgChat").children.length) for (let i = 0; i < 6; i++) chatPush();
+  clearInterval(chatTimer);
+  chatTimer = setInterval(chatPush, REDUCED ? 4000 : 2100);
+}
+function chatStop() { clearInterval(chatTimer); }
+
+/* ---- the card printer on the door ---- */
+function printCard() {
+  drawMyCard();
+  const f = $("#cardFig");
+  f.classList.remove("printing"); void f.offsetWidth; f.classList.add("printing");
+  sfx("print");
+}
+
+/* ---- the window's caption follows the real time of day ---- */
+function skyLine() {
+  const h = new Date().getHours();
+  $("#skyLine").textContent = h >= 7 && h < 17 ? "it's daytime outside. kowl hasn't been outside since the last bull run."
+    : h >= 17 && h < 20 ? "the sun's going down. kowl's 3:00pm call has already been deleted."
+      : "it's night. kowl is awake. kowl is always awake.";
+}
+
+function initRoomUI() {
+  initIndex();
+  initSound();
+  initTV();
+  initChatter();
+  initEggs();
+  $("#cardPrint").addEventListener("click", printCard);
+  if (window.SFX && window.SFX.wanted()) {
+    // browsers need a gesture before audio: resume on the first one
+    const go = () => { removeEventListener("pointerdown", go); removeEventListener("keydown", go); window.SFX.set(true); };
+    addEventListener("pointerdown", go); addEventListener("keydown", go);
+  }
+  uiLoop();
+  bootRoom();
 }
 
 /* =====================================================================
@@ -655,80 +1028,69 @@ function initCard() {
 }
 
 /* =====================================================================
-   the 3:00pm call: one prompt a day at 15:00 UTC, the same for everyone
+   the 3:00pm call (kowl's phone): one mission a day at 15:00 UTC, the same
+   for everyone, from missions.json (content/missions.json: the 30 calls)
    ===================================================================== */
 const CALL_EPOCH = Date.UTC(2026, 10, 25, 15); // call no. 1 dropped 25 nov 2026, 15:00 UTC
 const DAY = 86400000;
-const CALLS = [
-  ["kowl deletes the tweet.", 7], ["who paid you?", 0], ["proof of bags (seed phrase visible).", 2], ["taking a break from CT.", 13],
-  ["inside the alpha group.", 10], ["kowl's entry vs kowl's call.", 4], ["\"not financial advice\", right after the financial advice.", 3],
-  ["kowl claims a free airdrop.", 23], ["kowl's rate card leaks.", 1], ["47 calls before lunch.", 6], ["the KOL lifecycle.", 5],
-  ["the melted portfolio.", 12], ["kowl hosts a space.", 16], ["if CT had a paid partnership label.", 14], ["the hardest decision a KOL makes.", 15],
-  ["the KOL starter pack.", 17], ["the lineup.", 18], ["KOLs in 2021 vs 2026.", 19], ["readers added context.", 21], ["kowl's cold storage.", 22],
-  ["KOL → english.", 24], ["the only KOL that admits it.", 25], ["the notifications after \"this is the one\".", 26], ["KOLs vs kowls.", 27],
-  ["kowl did.", 28], ["now hiring: kowls.", 29], ["the side wallet's side wallet.", 30], ["receipts.", 31], ["kowl tries the callout template.", 32],
-  ["kowl's disclosure.", 33], ["wanted: kowl.", 9], ["KOL bingo.", 8], ["define: kowl'd.", 11], ["kowls want you.", 20],
-];
 // before launch nobody posts the $KOWL cashtag (copycat tickers). captions switch to the "paid by $KOWL" form once CA is set.
 const PRELAUNCH = !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(CA);
 const coinFree = (s) => s.replace(/\s*\(?paid by \$KOWL\)?[.,:]?/gi, "").replace(/\s*\$KOWL\b/g, "").replace(/[.,]?\s*(make memes, )?get paid in public\.?/gi, ".").replace(/\s*100% of creator fees\.?/gi, "").replace(/\.\./g, ".").replace(/[ \t]+\n/g, "\n").trim();
-// memes whose image shows $KOWL or payroll (0-based index into memes.json); swapped for coin-free ones before launch
-const COIN_IMG = new Set([20, 27, 28, 29, 31, 32]);
-const SAFE_IMG = [12, 5, 15, 19, 22, 6, 10, 13];
 const CAPTIONS = PRELAUNCH ? [
-  (p, c) => `${coinFree(c)}\n\nevery KOL is a kowl 🫠`,
-  (p, c) => `today's call: ${p}\n\n${coinFree(c)}`,
-  (p, c) => `${coinFree(c)}\n\nfollow @KowlFun 🫠`,
+  (m) => m.caption_prelaunch,
+  (m) => `today's call: ${m.title}\n\n${m.caption_prelaunch}`,
+  (m) => `${m.caption_prelaunch}\n\nfollow @KowlFun`,
 ] : [
-  (p, c) => `paid by $KOWL 🫠\n\n${c}`,
-  (p, c) => `paid by $KOWL. today's call: ${p}\n\n${c}`,
-  (p, c) => `paid by $KOWL (every kowl post says so)\n\n${c}`,
+  (m) => m.caption,
+  (m) => `${m.caption}\n\ntoday's call: ${m.title}`,
 ];
-const mission = { n: 0, cap: 0, meme: null, prompt: "", next: 0 };
+let MISSIONS = [];
+const mission = { n: 0, cap: 0, m: null, file: "", thumb: "", next: 0 };
 function callNow() {
   if (Date.now() < CALL_EPOCH) return { n: -1, next: CALL_EPOCH };
   const n = Math.floor((Date.now() - CALL_EPOCH) / DAY);
   return { n, next: CALL_EPOCH + (n + 1) * DAY };
 }
-const WARMUP = ["warm-up: who paid you?", 28];
 function renderMission() {
-  if (!memes.length) return;
+  if (!MISSIONS.length) return;
   const { n, next } = callNow();
-  const [prompt, mi0] = n < 0 ? WARMUP : CALLS[n % CALLS.length];
-  const mi = PRELAUNCH && COIN_IMG.has(mi0 % memes.length) ? SAFE_IMG[Math.max(n, 0) % SAFE_IMG.length] : mi0;
-  mission.n = n; mission.next = next; mission.prompt = prompt.replace(/^warm-up: /, "");
-  mission.meme = memes[mi % memes.length];
-  $("#callPrompt").textContent = prompt;
+  const m = MISSIONS[Math.max(n, 0) % MISSIONS.length];
+  mission.n = n; mission.next = next; mission.m = m;
+  mission.file = (PRELAUNCH && m.meme_prelaunch) || m.meme;
+  mission.thumb = (PRELAUNCH && m.thumb_prelaunch) || m.thumb;
+  $("#callPrompt").textContent = m.title;
+  $("#callIdea").textContent = `make your own: ${m.prompt}`;
   const day = (t) => new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).toLowerCase();
   $("#callTag").textContent = n < 0
-    ? `the first call drops ${day(CALL_EPOCH)}, 15:00 UTC · warm up meanwhile`
+    ? `the first call drops ${day(CALL_EPOCH)}, 15:00 UTC`
     : `call no. ${n + 1} · dropped ${day(CALL_EPOCH + n * DAY)}, 15:00 UTC`;
   $("#callNextLbl").textContent = n < 0 ? "first call in" : "next call in";
-  const file = mission.meme.file, thumb = file.replace("memes/", "memes/thumb/").replace(/\.jpg$/, ".webp");
-  $("#missionImg").src = thumb;
-  $("#missionImg").alt = mission.meme.caption || "today's meme";
-  $("#missionDl").href = file;
-  $("#missionDl").setAttribute("download", file.split("/").pop());
+  $("#missionImg").src = mission.thumb;
+  $("#missionImg").alt = m.title;
+  $("#missionDl").href = mission.file;
+  $("#missionDl").setAttribute("download", mission.file.split("/").pop());
   renderCaption();
+  if (R.room) loadImg(mission.thumb).then((img) => R.room && R.room.setMission(m, img)).catch(() => {});
 }
 function renderCaption() {
-  const cap = (mission.meme.caption || "").replace(/[’]/g, "'");
-  $("#missionText").value = CAPTIONS[mission.cap % CAPTIONS.length](mission.prompt, cap);
+  $("#missionText").value = CAPTIONS[mission.cap % CAPTIONS.length](mission.m).replace(/[’]/g, "'");
   syncIntent();
 }
 function syncIntent() { $("#missionPost").href = intentFor($("#missionText").value); }
 function tickCall() {
   const left = Math.max(0, mission.next - Date.now());
   const s = Math.floor(left / 1000);
-  $("#callCountdown").textContent = `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-  if (left <= 0 && memes.length) { renderMission(); toast("kowl just dropped the 3:00pm call. 🫠"); }
+  const cd = `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  $("#callCountdown").textContent = cd;
+  $("#phoneTime").textContent = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s?[AP]M$/i, "");
+  R.room && R.room.setCountdown(cd);
+  if (left <= 0 && MISSIONS.length) { renderMission(); toast("kowl just dropped the 3:00pm call. 🫠"); sfx("ping"); }
 }
-function initMission() {
-  if (PRELAUNCH) {
-    // pre-launch: coin-free posting, no Paid Partnership (nothing is paid yet), bagwork opens at launch
-    $(".mission-stamp").innerHTML = "every KOL<br>is a kowl";
-    $('label[for="missionText"] small').textContent = "(coin-free until launch: no ticker, no CA)";
-    $(".mission-steps").innerHTML = '<li><b>download</b> the meme (X\'s post button can\'t attach it for you).</li><li><b>post</b> with the caption and attach the image.</li><li><b>after launch</b> the caption switches to "paid by $KOWL", and bagwork pays +8 a post.</li>';
+async function initMission() {
+  if (!PRELAUNCH) {
+    $(".mission-stamp").innerHTML = "paid<br>by $KOWL";
+    $('label[for="missionText"] small').textContent = "(starts with \"paid by $KOWL\": that's the rule and the joke)";
+    $(".mission-steps").innerHTML = "<li><b>download</b> the meme (X's post button can't attach it for you).</li><li><b>post</b> with the caption, attach the image, turn on X's Paid Partnership label.</li><li><b>paste the link</b> into the laptop's bagwork box. checked in seconds, +8 points.</li>";
   }
   $("#missionText").addEventListener("input", syncIntent);
   $("#missionReroll").addEventListener("click", () => { mission.cap++; renderCaption(); });
@@ -737,10 +1099,19 @@ function initMission() {
     toast(ok ? (PRELAUNCH ? "caption copied. go post it." : "caption copied. turn on Paid Partnership when you post.") : "copy failed. select it by hand.");
     if (ok) melt(...evPoint(e), 4);
   });
-  $("#missionPost").addEventListener("click", () => toast(PRELAUNCH ? "attach the meme you downloaded, then post." : "attach the meme, turn on Paid Partnership, then paste the link in the sanctum."));
+  $("#missionPost").addEventListener("click", () => toast(PRELAUNCH ? "attach the meme you downloaded, then post." : "attach the meme, turn on Paid Partnership, then paste the link in the laptop."));
   $("#missionDl").addEventListener("click", () => toast("downloaded. now post it."));
-  tickCall();
   setInterval(tickCall, 1000);
+  try {
+    const res = await fetch("missions.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error(res.status);
+    MISSIONS = (await res.json()).filter((m) => m && m.meme && m.title);
+  } catch {
+    $("#callPrompt").textContent = "kowl's phone has no signal. refresh in a sec.";
+    return;
+  }
+  renderMission();
+  tickCall();
 }
 
 /* =====================================================================
@@ -771,7 +1142,6 @@ async function initMemes() {
     more.textContent = `show the whole canon (${memes.length})`;
     more.addEventListener("click", () => { grid.classList.remove("clipped"); more.hidden = true; });
   }
-  renderMission();
 }
 function openLightbox(i) {
   lbIndex = (i + memes.length) % memes.length;
@@ -817,6 +1187,7 @@ function initVaultTabs() {
   const show = tabs("vault", "vault-pane");
   $$("[data-vault-open]").forEach((a) => a.addEventListener("click", () => show(a.dataset.vaultOpen)));
   tabs("tool", "tool-pane");
+  tabs("term", "term-pane");
 }
 
 /* =====================================================================
@@ -1216,11 +1587,6 @@ function initShill() {
     toast("downloaded. it's kowl's fake shill: meme it, never post it as a real call.");
     melt(...evPoint(e), 5);
   });
-  // drawn when the rituals come into view, so it costs nothing up top
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { io.disconnect(); drawShill(); } }, { rootMargin: "400px" });
-    io.observe($("#rituals"));
-  } else drawShill();
 }
 const BINGO = [
   "gm to 400k bots", "\"this is the one\"", "\"nfa\" right after \"buy\"", "deleted tweet", "\"been watching this one for a while\"",
@@ -1388,12 +1754,9 @@ function initChart() {
 
 /* ---------------- boot ---------------- */
 document.addEventListener("DOMContentLoaded", () => {
-  initNav();
-  initReveal();
   initChant();
   initLinks();
   initCA();
-  initShrine();
   renderRanks();
   initCard();
   initPfp();
@@ -1409,4 +1772,5 @@ document.addEventListener("DOMContentLoaded", () => {
   initModals();
   initChart();
   initPayroll();
+  initRoomUI();
 });

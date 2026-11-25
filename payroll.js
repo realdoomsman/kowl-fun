@@ -106,6 +106,9 @@ const store = {
 function applyStats(s) {
   pr.stats = s;
   pr.state = s && s.status === "live" ? "live" : s ? "waiting" : "offline";
+  // before launch the server answers bagwork with {status:"closed"}; /api/stats says so up front
+  pr.bagOpen = !!(s && s.bagwork_open);
+  if (typeof R !== "undefined" && R.room) R.room.setStats(s);
   const live = isLive(), open = isOpen();
   $("#prStatus").dataset.state = pr.state;
   $("#navPay .ember").classList.toggle("off", !live);
@@ -259,8 +262,8 @@ function renderShillBoard(rows) {
   const el = $("#shillBoard"), more = $("#boardMore");
   if (!rows.length) {
     el.innerHTML = `<div class="board-empty"><img src="${IMG("shill")}" alt="" width="800" height="800" loading="lazy">
-      <div><b>the door is still bare.</b><p>the first accepted bagwork gets nailed up here, with the kowl's name on it. it could be yours: answer today's call, post it with "paid by $KOWL", paste the link in the sanctum.</p>
-      <a class="btn line sm" href="#mission">today's call →</a></div></div>`;
+      <div><b>the door is still bare.</b><p>the first accepted bagwork gets nailed up here, with the kowl's name on it. it could be yours: answer today's call on kowl's phone, post it with "paid by $KOWL", paste the link in the laptop's bagwork box.</p>
+      <a class="btn ghost sm" href="#call">today's call →</a></div></div>`;
     more.hidden = true;
     return;
   }
@@ -364,12 +367,12 @@ function renderSignin() {
   $("#gsiBtn").hidden = !!a || !signInReady();
   if (a) {
     $("#signinTitle").textContent = "you signed the register";
-    $("#signinSub").textContent = a.banned ? "this account is frozen. ask @KowlFun." : "your email is never shown anywhere. your card below is yours.";
+    $("#signinSub").textContent = a.banned ? "this account is frozen. ask @KowlFun." : "your email is never shown anywhere. your kowl card is on the door.";
     return;
   }
   if (!signInReady()) {
     $("#signinTitle").textContent = "the register opens soon";
-    $("#signinSub").textContent = "payroll is unreachable right now. your card and pfp still work: make them below.";
+    $("#signinSub").textContent = "payroll is unreachable right now. your card (the door) and your pfp (the mirror) still work.";
   } else {
     $("#signinTitle").textContent = "sign the register";
     $("#signinSub").textContent = "one tap with google. no wallet needed until you withdraw. your email is never shown anywhere.";
@@ -519,11 +522,17 @@ function renderX(a) {
     form.hidden = false;
     vform.hidden = true;
   }
-  const ok = st === "verified" && !a.banned;
+  const ok = st === "verified" && !a.banned && pr.bagOpen;
   ["#bagUrl", "#bagBtn"].forEach((s) => { $(s).disabled = !ok; });
   $("#bagForm").classList.toggle("locked", !ok);
-  if (!ok && !$("#bagMsg").textContent) setMsg($("#bagMsg"), "link your X first. bagwork only counts from your own linked account.", "info");
-  if (ok && $("#bagMsg").classList.contains("info") && /link your X first/.test($("#bagMsg").textContent)) setMsg($("#bagMsg"), "");
+  $("#bagForm").hidden = !pr.bagOpen;
+  $("#bagNote").innerHTML = pr.bagOpen
+    ? 'post on X from your linked account, starting with <code>paid by $KOWL</code>, Paid Partnership label on. paste the link: it\'s checked automatically in seconds.'
+    : "<b>bagwork opens at launch.</b> link your X now so you're ready: the first disclosed posts after launch earn +8 each, checked automatically.";
+  const bm = $("#bagMsg");
+  if (!pr.bagOpen) { if (!bm.classList.contains("err")) setMsg(bm, ""); }
+  else if (st !== "verified" && !bm.textContent) setMsg(bm, "link your X first. bagwork only counts from your own linked account.", "info");
+  else if (st === "verified" && bm.classList.contains("info") && /link your X first/.test(bm.textContent)) setMsg(bm, "");
 }
 function renderMeList() {
   const me = pr.token ? pr.me : null, el = $("#meList");
@@ -540,7 +549,7 @@ function renderMeList() {
       return `<div class="me-meme"><div class="mthumb">${thumb}</div>
         <div><b>${esc(m.title || "untitled")}</b>${pill(m.status, MEME_ST[m.status])}${m.best ? pill("best", "⭐ best") : ""}<span class="meta">${meta}</span></div>
         <div class="amt">${num(m.points) ? `+${commas(num(m.points))}<small>pts</small>` : "–"}</div></div>`;
-    }).join("") || '<p class="empty">no memes yet. offer one in the vault: +10 points when it\'s approved.</p>';
+    }).join("") || '<p class="empty">no memes yet. pin one on the polaroid wall: +10 points when it\'s approved.</p>';
   } else if (tab === "bagwork") {
     html = list("bagwork").map((b) => {
       const link = X_STATUS.test(b.url || "") ? b.url : "";
@@ -581,7 +590,7 @@ function initMe() {
     const name = $("#nameInput").value.trim(), msg = $("#nameMsg");
     if (!name) { setMsg(msg, "a name needs at least one letter. even kowl has one.", "err"); return; }
     if (!(pr.me && pr.me.account)) {
-      setMsg(msg, "it's on your card. sign the register (step i) to make it official.", "info");
+      setMsg(msg, "it's on your card (the door). sign in with google above to make it official.", "info");
       drawMyCard();
       return;
     }
@@ -643,6 +652,12 @@ function initMe() {
     try {
       const r = (await api("/api/bagwork", { url })) || {};
       if (r.status === "accepted") { setMsg(msg, `credited: +${commas(num(r.points) || 8)} points 🫠 it's on the shill board now. delete the post and they go too.`, "ok"); loadShillBoard(); }
+      else if (r.status === "closed" || r.code === "closed") {
+        setMsg(msg, `${r.reason || "bagwork opens at launch"}. nothing was sent to X. link your X now and you're ready.`, "info");
+        pr.bagOpen = false;
+        renderAccount();
+        return;
+      }
       else if (r.status === "rejected" || r.status === "paused") setMsg(msg, `not credited: ${r.reason || "it didn't pass the check"}.`, "err");
       else {
         setMsg(msg, "got it. X is slow right now, so it's queued: it'll be checked automatically in a minute.", "info");
@@ -712,7 +727,7 @@ function pickFile() {
 async function uploadMeme(e) {
   e.preventDefault();
   const msg = $("#upMsg"), title = $("#upTitle").value.trim();
-  if (!(pr.token && pr.me && pr.me.account)) { setMsg(msg, "sign the register first (initiation, step i). then your offering earns points.", "info"); return; }
+  if (!(pr.token && pr.me && pr.me.account)) { setMsg(msg, "sign in on the laptop first. then your meme earns points.", "info"); return; }
   if (!upFile) { setMsg(msg, "pick an image or a video first.", "err"); return; }
   if (!title) { setMsg(msg, "give it a title. kowl needs something to read (he can't).", "err"); $("#upTitle").focus(); return; }
   if (!$("#upAttest").checked) { setMsg(msg, "tick the box: it has to be your own meme, and payroll isn't available in the UK, EU or Australia.", "err"); return; }
@@ -723,7 +738,7 @@ async function uploadMeme(e) {
     const fd = new FormData();
     fd.append("title", title); fd.append("attest", "1"); fd.append("file", upFile);
     await api("/api/memes", fd);
-    setMsg(msg, "offered 🫠 a human checks it before it goes public (usually within a few hours). track it in the sanctum.", "ok");
+    setMsg(msg, "pinned 🫠 a human checks it before it goes public (usually within a few hours). track it on the laptop.", "ok");
     $("#uploadForm").reset();
     pickFile();
     melt(innerWidth / 2, innerHeight / 2, 10);
@@ -783,7 +798,7 @@ function watchViews() {
 function renderGallery() {
   const el = $("#gallery");
   if (!isOpen()) {
-    el.innerHTML = emptyHTML("this-is-the-one", "the congregation's wall opens soon", "payroll is unreachable right now. the canon is all yours meanwhile.");
+    el.innerHTML = emptyHTML("this-is-the-one", "the community wall opens soon", "payroll is unreachable right now. the canon is all yours meanwhile.");
     $("#galMore").hidden = true;
     return;
   }
