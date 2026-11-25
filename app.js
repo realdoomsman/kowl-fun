@@ -1,11 +1,11 @@
 /* =====================================================================
    the order of kowls ($KOWL) — fill these in at launch. nothing else needs editing.
    ===================================================================== */
-const CA = "coming soon";            // paste the contract address here
+const CA = "41TQSL8UvPVrcVUsQLJkQ92mSA6RPiLkGmQ3NBnrpump";            // paste the contract address here
 const LINKS = {
   x: "https://x.com/KowlFun",        // official X: @KowlFun. (@kowl is an unrelated real person: never link it)
   telegram: "#",                     // https://t.me/...
-  pump: "#",                         // https://pump.fun/coin/<CA>
+  pump: "https://pump.fun/coin/41TQSL8UvPVrcVUsQLJkQ92mSA6RPiLkGmQ3NBnrpump",                         // https://pump.fun/coin/<CA>
   twitch: "https://twitch.tv/kowlfun", // kowl live
 };
 const API_BASE = "https://api.kowl.fun"; // kowl payroll API. "" = payroll shows "opens at launch"
