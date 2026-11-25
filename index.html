@@ -3,802 +3,712 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>kowl ($KOWL) · KOWL TV: live from the KOL studio. every KOL is a kowl.</title>
-<meta name="description" content="every KOL is a kowl. KOLs get paid in secret. kowls get paid in public: sign in, make $KOWL memes, earn points. every 15 minutes 100% of the creator fees are split by points. withdraw SOL anytime.">
-<meta name="theme-color" content="#07090d">
+<title>the order of kowls ($KOWL) · every KOL is a kowl. kowls get paid in public.</title>
+<meta name="description" content="join the order of kowls. every KOL is a kowl: KOLs get paid in secret, kowls get paid in public. make $KOWL memes and disclosed bagwork, earn points, and every 15 minutes 100% of the creator fees are split by points. withdraw SOL anytime.">
+<meta name="theme-color" content="#120D0A">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="canonical" href="https://kowl.fun/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kowl.fun/">
-<meta property="og:site_name" content="KOWL TV">
-<meta property="og:title" content="kowl ($KOWL) · every KOL is a kowl.">
-<meta property="og:description" content="KOLs get paid in secret. kowls get paid in public. 100% of creator fees go to $KOWL meme makers. who paid you? 🫠">
+<meta property="og:site_name" content="the order of kowls">
+<meta property="og:title" content="the order of kowls ($KOWL) · every KOL is a kowl.">
+<meta property="og:description" content="KOLs get paid in secret. kowls get paid in public. 100% of creator fees go to the people who make $KOWL memes. join the order 🫠">
 <meta property="og:image" content="https://kowl.fun/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@KowlFun">
-<meta name="twitter:title" content="kowl ($KOWL) · every KOL is a kowl.">
+<meta name="twitter:title" content="the order of kowls ($KOWL) · every KOL is a kowl.">
 <meta name="twitter:description" content="KOLs get paid in secret. kowls get paid in public. 🫠">
 <meta name="twitter:image" content="https://kowl.fun/og.jpg">
-<link rel="preload" href="fonts/archivo-black.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/unifraktur.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/kowl-gm.webp" as="image" fetchpriority="high">
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://api.kowl.fun" crossorigin>
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <script type="importmap">
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.min.js",
     "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.core.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.core.min.js",
     "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/",
-    "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/BufferGeometryUtils.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/BufferGeometryUtils.min.js",
-    "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/SkeletonUtils.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/SkeletonUtils.min.js"
+    "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/BufferGeometryUtils.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/utils/BufferGeometryUtils.min.js"
   }
 }
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"kowl ($KOWL) · KOWL TV","url":"https://kowl.fun/","description":"every KOL is a kowl. kowl payroll pays $KOWL meme makers in public, every 15 minutes.","sameAs":["https://x.com/KowlFun"]}
+{"@context":"https://schema.org","@type":"WebSite","name":"the order of kowls ($KOWL)","url":"https://kowl.fun/","description":"every KOL is a kowl. kowl payroll pays $KOWL meme makers and disclosed bagworkers in public, every 15 minutes.","sameAs":["https://x.com/KowlFun"]}
 </script>
 </head>
 <body>
-<a class="skip" href="#expose">skip to the show</a>
+<a class="skip" href="#creed">skip to the creed</a>
 
-<!-- ======== broadcast chrome ======== -->
-<header class="topbar" id="topbar">
-  <a class="bug" href="#live" aria-label="KOWL TV, back to the live studio">
-    <img src="img/kowl-head-256.png" alt="" width="34" height="34">
-    <span class="bug-name">KOWL<b>TV</b></span>
-    <span class="onair"><i></i>LIVE</span>
-  </a>
-  <nav class="guide" aria-label="channel guide">
-    <a href="#live" data-chn="1"><b>01</b>live</a>
-    <a href="#expose" data-chn="2"><b>02</b>exposé</a>
-    <a href="#lore" data-chn="3"><b>03</b>lore</a>
-    <a href="#payroll" data-chn="4"><b>04</b>payroll</a>
-    <a href="#join" data-chn="5"><b>05</b>join</a>
-    <a href="#memes" data-chn="6"><b>06</b>memes</a>
-    <a href="#tv" data-chn="7"><b>07</b>tv</a>
-    <a href="#pfp" data-chn="8"><b>08</b>pfp</a>
-    <a href="#toolkit" data-chn="9"><b>09</b>toolkit</a>
-  </nav>
-  <div class="top-r">
-    <button class="snd" id="sndBtn" aria-pressed="false" aria-label="sound is off" title="sound (off by default)"><span class="snd-ico" aria-hidden="true"></span></button>
-    <a class="buy-btn" data-link="pump" href="#" target="_blank" rel="noopener">buy $KOWL</a>
+<!-- ================= nav ================= -->
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#shrine" aria-label="the order of kowls, back to the shrine">
+      <img src="img/kowl-head-256.webp" alt="" width="34" height="34">
+      <span class="brand-t"><b>the Order</b><i>of kowls</i></span>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="sections">
+      <a href="#creed">creed</a>
+      <a href="#initiation">initiation</a>
+      <a href="#mission">mission</a>
+      <a href="#board">shill board</a>
+      <a href="#congregation">congregation</a>
+      <a href="#vault">vault</a>
+      <a href="#rituals">rituals</a>
+    </nav>
+    <span class="nav-pay" id="navPay" title="kowl payroll"><i class="ember"></i><span id="navPayText">payroll opens at launch</span></span>
+    <a class="btn gold sm nav-join" href="#initiation" id="navJoin">join the order</a>
+    <button class="nav-burger" id="burger" aria-expanded="false" aria-controls="navLinks" aria-label="menu"><i></i><i></i></button>
   </div>
 </header>
 
-<div class="ticker" aria-label="breaking news">
-  <span class="ticker-tag">BREAKING</span>
-  <div class="ticker-track"><div class="ticker-run" id="tickerRun"></div></div>
-  <span class="ticker-clock" id="clock" aria-hidden="true">00:00:00</span>
-</div>
+<main id="main">
 
-<div class="osd" id="osd" aria-hidden="true"><b id="osdNum">CH 01</b><span id="osdName">LIVE</span></div>
-<div class="static" id="static" aria-hidden="true"></div>
-<p class="sr-only" id="chAnnounce" aria-live="polite"></p>
-
-<main id="top">
-
-<!-- ================= CH 01 · LIVE ================= -->
-<section class="ch ch-live" id="live" data-ch="1" data-name="LIVE" data-pose="idle" aria-labelledby="liveTitle">
-  <div class="studio" id="studio">
-    <div class="stage" id="stage">
-      <div class="stage-3d" id="stage3d"></div>
-      <button class="kowl2d" id="heroKowl" aria-label="poke kowl">
-        <span class="jelly-tilt"><span class="jelly"><img id="heroImg" src="img/kowl-gm.webp" alt="kowl, a peach blob with a blue check sticker on its forehead and a gold KOWL chain" width="800" height="800" fetchpriority="high"></span></span>
-      </button>
-      <div class="crt" aria-hidden="true"></div>
-      <div class="vignette" aria-hidden="true"></div>
-
-      <div class="hud hud-tl" aria-hidden="true">
-        <span class="rec"><i></i>REC</span>
-        <span>CAM 1 · KOL STUDIO</span>
+<!-- ================= I. the shrine ================= -->
+<section class="shrine" id="shrine" aria-labelledby="shrineTitle">
+  <div class="wrap shrine-grid">
+    <div class="shrine-copy">
+      <p class="eyebrow light">ordo kowlorum · est. before launch · $KOWL</p>
+      <h1 class="masthead" id="shrineTitle"><span class="bl">the Order</span> <span class="of">of</span> <span class="kowls">kowls</span></h1>
+      <p class="creed-lead">every KOL is a kowl.</p>
+      <p class="creed-pair"><span>KOLs get paid <em>in secret</em>.</span> <span>kowls get paid <em>in public</em>.</span></p>
+      <p class="shrine-sub">a spineless peach blob with a blue check sticker thinks it's a crypto KOL. we made it a religion. <b>100% of $KOWL's creator fees</b> go to the kowls who make its memes and post disclosed bagwork, every 15 minutes, on a public ledger.</p>
+      <div class="cta-row">
+        <a class="btn gold" href="#initiation">join the order <span aria-hidden="true">→</span></a>
+        <a class="btn line light" href="#mission">today's mission</a>
       </div>
-      <div class="hud hud-tr">
-        <span class="watching"><b id="watching">1,204,331</b> watching</span>
-        <small>(840k are bots)</small>
+      <div class="coin" id="coin">
+        <div class="coin-pre" id="coinPre">
+          <span class="coin-chip"><i class="ember off"></i>coin not live yet</span>
+          <span class="coin-note">no CA exists. anyone posting one before launch is a kowl.</span>
+          <a class="btn x sm" data-link="x" href="https://x.com/KowlFun" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.25h3.3l-7.2 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg>follow @KowlFun</a>
+        </div>
+        <div class="coin-live" id="coinLive" hidden>
+          <button class="ca" id="caCopy" type="button"><small>CA</small><code id="caText"></code><span>copy</span></button>
+          <a class="btn gold sm" data-link="pump" href="#" target="_blank" rel="noopener">pump.fun ↗</a>
+          <a class="btn x sm" data-link="x" href="https://x.com/KowlFun" target="_blank" rel="noopener">@KowlFun</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="altar" id="altar">
+      <div class="shrine-rays" aria-hidden="true"></div>
+      <div class="altar-stage" id="altarStage">
+        <div class="altar-2d" id="altar2d" aria-hidden="true">
+          <div class="halo2d"><i></i></div>
+          <img class="kowl2d" id="kowl2d" src="img/kowl-gm.webp" alt="" width="800" height="800" fetchpriority="high">
+          <div class="plinth"><span>ORDO KOWLORUM</span></div>
+          <div class="candles2d"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <button class="altar-poke" id="altarPoke" type="button" aria-label="poke kowl"></button>
+        <div class="bubble" id="bubble" aria-live="polite" hidden></div>
+        <span class="poke-hint" id="pokeHint" aria-hidden="true">poke him</span>
+      </div>
+      <p class="altar-cap"><span id="pokeCount">0</span> offerings (pokes) on this device. the seventh melts him.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <dl class="vigil" id="vigil">
+      <div><dt>kowls sworn in</dt><dd id="stKowls">–</dd></div>
+      <div><dt>memes this round</dt><dd id="stMemes">–</dd></div>
+      <div><dt>paid in public</dt><dd><span id="stPaid">–</span> <small>SOL</small></dd></div>
+      <div><dt>next payday</dt><dd id="stNext">at launch</dd></div>
+    </dl>
+  </div>
+
+  <div class="chant" aria-hidden="true"><div class="chant-run" id="chantRun"></div></div>
+</section>
+
+<!-- ================= II. the creed ================= -->
+<section class="sec paper" id="creed" aria-labelledby="creedTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">ii</span>
+      <p class="eyebrow">the creed</p>
+      <h2 id="creedTitle">we say it's <em>paid.</em></h2>
+    </header>
+
+    <div class="creed-grid">
+      <div class="manifesto reveal">
+        <p class="dropcap">every week another KOL gets caught. paid posts with no disclosure. bundled wallets. deleted tweets. private groups that get in before you. retail keeps being the exit, and the blue checks keep saying <q>not financial advice</q> right after the financial advice.</p>
+        <p>kowl is all of them melted into one blob. no brain, no bones, no spine. it calls forty coins a day and every one is <q>the one</q>. it is <q>just a holder</q> (it sold yesterday). it has <q>been watching this one for a while</q> (four minutes).</p>
+        <p>so we started an order. <b>anyone can be a kowl.</b> you make the memes, you post the bagwork, and every paid post says it's paid. the fees that would go to a secret KOL round go to you instead, credited in public every fifteen minutes. <b>the only KOL program where every paid post says it's paid.</b></p>
+        <p class="sig">signed, <span>kowl</span> <small>(it can't write. someone helped.)</small></p>
       </div>
 
-      <div class="bubble" id="heroBubble" aria-live="polite">gm</div>
-      <div class="poke-hint" id="pokeHint" aria-hidden="true"><span>poke him</span><svg viewBox="0 0 60 40"><path d="M4 30C18 6 36 4 54 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M44 6l10 8-12 4" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-
-      <aside class="chat" aria-label="live chat (fictional)">
-        <div class="chat-h"><span>live chat</span><small>slow mode: off · disclosure: on</small></div>
-        <ol class="chat-list" id="chatList"></ol>
+      <aside class="vows reveal" aria-label="the three vows">
+        <p class="vows-h">the three vows</p>
+        <ol>
+          <li><b>disclose.</b> every paid post starts with <code>paid by $KOWL</code> and wears X's Paid Partnership label.</li>
+          <li><b>create.</b> memes, not raids. we never pay for likes, replies or views.</li>
+          <li><b>melt.</b> put 🫠 in your name. it's decoration, not a disclosure.</li>
+        </ol>
+        <p class="vows-foot">who paid you? <b>$KOWL did. it's on-chain. 🫠</b></p>
       </aside>
     </div>
 
-    <div class="lower">
-      <div class="l3-tag"><span class="l3-red">BREAKING</span><span class="l3-blk">LIVE FROM THE KOL STUDIO</span></div>
-      <h1 class="l3-title" id="liveTitle">every KOL<br>is a <span class="kowl-word">kowl.</span></h1>
-      <p class="l3-sub">kowl is every crypto KOL melted into one dumb blob: paid posts, deleted tweets, "not financial advice". no brain, no bones, no spine. just a blue check sticker.</p>
-      <p class="l3-twist">KOLs get paid in secret. <b>kowls get paid in public.</b></p>
-      <div class="hero-ctas">
-        <a class="btn big blue" href="#join">become a kowl →</a>
-        <a class="btn big ghost" href="#payroll">how payroll works</a>
-      </div>
-      <div class="ca-box" id="caBox">
-        <span class="ca-label">CA</span>
-        <code id="caText">coming soon</code>
-        <button class="ca-copy" id="caCopy">copy</button>
-      </div>
-      <div class="cta-row">
-        <a class="cta cta-pump" data-link="pump" href="#" target="_blank" rel="noopener"><span class="pill-ico" aria-hidden="true"></span>pump.fun</a>
-        <a class="cta cta-x" data-link="x" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.3l4.4 5.9zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg>@KowlFun</a>
-        <a class="cta cta-tg" data-link="telegram" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.3 18.7 19.6c-.2 1.1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.2 13.3l-4.8-1.5c-1-.3-1.1-1 .2-1.5L20.5 3c.9-.3 1.6.2 1.4 1.3z"/></svg>telegram</a>
-      </div>
-      <a class="pay-strip" href="#payroll" id="payStrip"><span class="live-dot off"></span><span id="payStripText">kowl payroll opens at launch</span></a>
-      <p class="toy-line">kowl got poked <b id="pokeCount">0</b> times on this device. poke him 7 times and see what happens.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CH 02 · THE EXPOSÉ ================= -->
-<section class="ch ch-expose" id="expose" data-ch="2" data-name="THE EXPOSÉ" data-pose="deleted" aria-labelledby="exposeTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 02</span>
-    <span class="kicker">tonight's investigation</span>
-    <h2 class="ransom" id="exposeTitle" data-ransom>CT runs on secret paid posts.</h2>
-    <p class="ch-lead">every week another blue check gets exposed. retail keeps being the exit liquidity. kowl is all of them in one blob, so you can laugh at the trope without naming anyone.</p>
-  </div>
-
-  <div class="corkboard">
-    <svg class="string" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path d="M110 40 C 300 160, 420 10, 620 120 S 880 40, 900 150" fill="none" stroke="#d3242c" stroke-width="2.4"/></svg>
-    <figure class="polaroid tilt-l"><span class="pin" aria-hidden="true"></span><img src="img/kowl-shill.webp" alt="kowl on the phone with a headset" width="800" height="800" loading="lazy"><figcaption><b>"not paid btw"</b>paid posts, no disclosure. ever.</figcaption></figure>
-    <figure class="polaroid tilt-r"><span class="tape" aria-hidden="true"></span><img src="img/kowl-deleted.webp" alt="kowl sweating at his phone" width="800" height="800" loading="lazy"><figcaption><b>*deletes tweet*</b>the call disappears right after the dump.</figcaption></figure>
-    <figure class="polaroid tilt-l2"><span class="pin" aria-hidden="true"></span><img src="img/kowl-leaving.webp" alt="kowl seen from behind, leaving" width="800" height="800" loading="lazy"><figcaption><b>"47 of us agreed"</b>alpha groups that get in before you.</figcaption></figure>
-    <figure class="polaroid tilt-r2"><span class="tape" aria-hidden="true"></span><img src="img/kowl-nfa.webp" alt="kowl shrugging" width="800" height="800" loading="lazy"><figcaption><b>"nfa"</b>right after telling you to buy.</figcaption></figure>
-    <p class="scribble s1" aria-hidden="true">all the same blob??</p>
-    <p class="scribble s2" aria-hidden="true">← follow the SOL</p>
-  </div>
-
-  <div class="evidence">
-    <div class="exhibit">
-      <h3 class="exhibit-h"><span class="ex-tag">exhibit A</span> kowl's timeline</h3>
-      <p class="mut exhibit-p">every post has a community note. tap <b>readers added context</b> to see what actually happened.</p>
-      <div class="posts" id="posts"></div>
-      <div class="posts-foot">
-        <button class="btn ghost" id="morePosts">show more posts</button>
-        <button class="link-btn" id="revealAll">show every community note</button>
-      </div>
-    </div>
-
-    <div class="exhibit exhibit-b">
-      <h3 class="exhibit-h"><span class="ex-tag">exhibit B</span> the leaked media kit</h3>
-      <div class="ratecard">
-        <div class="stamp stamp-card" aria-hidden="true">EXPOSED</div>
-        <h4>kowl's rate card <small>found in a public drive called "kowl_ratecard_FINAL_final_v3". SOL, paid before the post, never disclosed.</small></h4>
-        <ul class="rates">
-          <li><span>"gm" to 1.2M bots</span><b>0.5</b></li>
-          <li><span>"been watching this one for a while"</span><b>3</b></li>
-          <li><span>"this is the one."</span><b>5</b></li>
-          <li><span>🧵 thread (27 posts, all say "buy")</span><b>8</b></li>
-          <li><span>"not paid btw"</span><b>+2</b></li>
-          <li><span>"nfa" at the end</span><b class="free">free, always</b></li>
-          <li><span>deleting the tweet after the dump</span><b class="free">included</b></li>
-          <li><span>3:00pm slot in the alpha group (47 KOLs)</span><b class="raw">25 SOL + 2%</b></li>
-          <li class="na"><span>telling you it's a paid post</span><b>not available</b></li>
-        </ul>
-        <div class="sticky-note" tabindex="0">
-          <b>seed phrase</b> (do not share)
-          <span class="seed">blob melt chain check gold sticker phone spine none brain zero kowl123</span>
-          <i>stuck on kowl's forehead next to the blue check. it was in the "proof of bags" screenshot.</i>
-        </div>
-      </div>
-
-      <h3 class="exhibit-h"><span class="ex-tag">exhibit C</span> the receipts</h3>
-      <div class="wallet-receipt" aria-label="kowl's wallet activity, fictional">
-        <p class="wr-head">kowl.sol · on-chain activity<br><small>printed by a kowl who checked</small></p>
-        <ol>
-          <li><time>14:56:02</time><span>BUY 41,200,000 $GOO</span></li>
-          <li class="post"><time>15:00:00</time><span>posts "been watching this one for a while 👀"</span></li>
-          <li><time>15:00:41</time><span>46 other KOLs post $GOO</span></li>
-          <li class="sell"><time>15:01:13</time><span>SELL 41,200,000 $GOO (+212 SOL)</span></li>
-          <li class="post"><time>15:47:30</time><span>post deleted by the post author</span></li>
-          <li class="post"><time>17:00:00</time><span>"taking a break from CT 🙏"</span></li>
-        </ol>
-        <p class="wr-total"><span>"a while"</span><b>4 min 0 s</b></p>
-        <p class="wr-foot">all coins, wallets and times are made up. the pattern isn't.</p>
-      </div>
-      <p class="bridge">see the last line of the rate card? <b>kowl payroll is the opposite.</b> telling you it's paid is the whole point. ↓</p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= CH 03 · LORE ================= -->
-<section class="ch ch-lore" id="lore" data-ch="3" data-name="KOWL LORE" data-pose="high" aria-labelledby="loreTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 03</span>
-    <span class="kicker">a kowl tv documentary</span>
-    <h2 id="loreTitle">the kowl files</h2>
-    <p class="ch-lead">where kowl came from, what kowl does all day, and the language kowl speaks. all of it fictional. all of it familiar.</p>
-  </div>
-
-  <h3 class="lore-h"><span>part 1</span> origin story</h3>
-  <ol class="comic">
-    <li class="panel">
-      <img src="img/kowl-derp.webp" alt="kowl with its tongue out" width="800" height="800" loading="lazy">
-      <p><b>2021.</b> a blob with no brain finds a blue check sticker on the floor of a conference bathroom.</p>
-      <span class="sfx" aria-hidden="true">*squelch*</span>
-    </li>
-    <li class="panel">
-      <img src="img/kowl-gm.webp" alt="kowl in sunglasses waving" width="800" height="800" loading="lazy">
-      <p>it sticks it on its forehead and says "gm". by friday it has <b>1.2M followers</b>. 840k are bots it bought in a bundle.</p>
-      <span class="sfx" aria-hidden="true">gm!!</span>
-    </li>
-    <li class="panel">
-      <img src="img/kowl-rich.webp" alt="kowl in sunglasses with a phone and a grin" width="800" height="800" loading="lazy">
-      <p>its first paid post buys a gold chain with its own name on it. it doesn't tell anyone the post was paid.</p>
-      <span class="sfx" aria-hidden="true">ka-ching</span>
-    </li>
-    <li class="panel">
-      <img src="img/kowl-this-is-the-one.webp" alt="kowl pointing, cross-eyed" width="800" height="800" loading="lazy">
-      <p>since then it has called <b>4,000 coins</b> "the one". it has no spine. it is every KOL. it is <b>kowl</b>.</p>
-      <span class="sfx" aria-hidden="true">THE ONE.</span>
-    </li>
-  </ol>
-
-  <h3 class="lore-h"><span>part 2</span> as seen in</h3>
-  <div class="press">
-    <article class="clip c1"><span class="mast">The Blob Street Journal</span><h4>local blob calls 47 coins before lunch, all of them "the one"</h4><p>"i've been watching every one of them for a while," said the blob, who bought each 4 minutes earlier.</p></article>
-    <article class="clip c2"><span class="mast">Financial Kowls</span><h4>"not financial advice" officially ruled financial advice</h4><p>analysts note the phrase now appears exclusively at the end of financial advice.</p></article>
-    <article class="clip c3"><span class="mast">THE DAILY MELT</span><h4>KOL TAKES MENTAL HEALTH BREAK, POSTS 41 TIMES</h4><p>sources close to the blob say the break lasted "about a tweet".</p></article>
-    <article class="clip c4"><span class="mast">kowl science weekly</span><h4>scientists confirm: kowl has no spine</h4><p>"also no brain," added the lead researcher. "we checked twice."</p></article>
-    <article class="clip c5"><span class="mast">BLOBBERG TERMINAL</span><h4>KOWL "JUST A HOLDER", ON-CHAIN DATA DISAGREES</h4><p>$SPINE −100% · kowl.sol sold 15:01:07 · story developing</p></article>
-    <article class="clip c6"><span class="mast">the kol gazette</span><h4>blob's password was kowl123. new password: kowl1234</h4><p>security experts describe the change as "technically a change".</p></article>
-  </div>
-
-  <h3 class="lore-h"><span>part 3</span> a day in the life of kowl</h3>
-  <ol class="day">
-    <li><time>05:59</time><p>wakes up. checks if anyone noticed yesterday's deleted tweet. they did.</p></li>
-    <li><time>06:00</time><p>"gm" to 1.2M followers. 840k bots say gm back.</p></li>
-    <li><time>08:30</time><p>replies "this is the one 🫵" under 12 coins. all 12 are the one.</p></li>
-    <li><time>10:56</time><p>buys $GOO.</p></li>
-    <li><time>11:00</time><p>"been watching $GOO for a while 👀"</p></li>
-    <li class="hot"><time>14:55</time><p>alpha group (47 KOLs) agrees on the 3:00pm coin.</p></li>
-    <li class="hot"><time>15:00</time><p>47 KOLs post the same coin. "not paid btw."</p></li>
-    <li class="hot"><time>15:01</time><p>47 KOLs race to sell. kowl comes 31st. blames jeets.</p></li>
-    <li><time>15:47</time><p><s>the post</s> this post was deleted by the post author.</p></li>
-    <li><time>17:00</time><p>"taking a break from CT for my mental health 🙏"</p></li>
-    <li><time>17:02</time><p>posts 41 more times.</p></li>
-    <li class="dumb"><time>21:00</time><p>clicks "FREE AIRDROP 🎁". signs 14 transactions without reading them. kowl cannot read.</p></li>
-    <li><time>23:59</time><p>"gn". sells while you sleep.</p></li>
-  </ol>
-
-  <h3 class="lore-h"><span>part 4</span> the KOL dictionary</h3>
-  <div class="dict">
-    <div class="dict-top">
-      <p class="dict-word"><b>kowl</b> <i>/kaʊl/</i> <em>n.</em> 1. a KOL, honestly. 2. a holder who makes $KOWL memes and gets paid for it in public. <em>v.</em> <b>to get kowl'd</b>: to buy a KOL's call and get dumped on. <q>you got kowl'd.</q></p>
-      <label class="dict-search"><span class="sr-only">search the dictionary</span><input id="dictQ" type="search" placeholder="look up a KOL phrase… (try &quot;nfa&quot;)" autocomplete="off"></label>
-    </div>
-    <dl class="dict-list" id="dictList" tabindex="0" aria-label="the KOL dictionary"></dl>
-    <p class="dict-n mut" id="dictN"></p>
-  </div>
-
-  <h3 class="lore-h"><span>part 5</span> kowl by the numbers</h3>
-  <ul class="numbers">
-    <li><b data-count="41">41</b><span>"the one"s per day</span></li>
-    <li><b data-count="840">840</b><span>k bot followers</span></li>
-    <li><b data-count="4">4</b><span>minutes = "a while"</span></li>
-    <li><b data-count="47">47</b><span>KOLs in the alpha group</span></li>
-    <li><b data-count="0">0</b><span>spines</span></li>
-    <li><b>kowl123</b><span>the old password</span></li>
-  </ul>
-</section>
-
-<!-- ================= CH 04 · PAYROLL ================= -->
-<section class="ch ch-payroll payroll" id="payroll" data-ch="4" data-name="KOWL PAYROLL" data-pose="rich" aria-labelledby="payrollTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 04</span>
-    <span class="kicker">the twist</span>
-    <h2 id="payrollTitle">kowl payroll</h2>
-    <p class="ch-lead">KOLs get paid in secret. <b>kowls get paid in public.</b> 100% of $KOWL's pump.fun creator fees go to the people who make $KOWL memes and do honest, labelled bagwork. every credit and every withdrawal is public.</p>
-  </div>
-
-  <div class="pr-status" id="prStatus" data-state="offline">
-    <span class="live-dot off"></span>
-    <div><b id="prStatusTitle">payroll opens at launch</b><span id="prStatusSub">make your memes now. sign-in, points and payday open when $KOWL is live.</span></div>
-  </div>
-
-  <div class="scoreboard" aria-label="kowl payroll live stats">
-    <div class="sb-cell sb-hero"><b>100%</b><span>of creator fees</span><i>no team cut. no KOL round.</i></div>
-    <div class="sb-cell"><b id="stPool">–</b><span>SOL in the pool</span><i id="stRollover">since the last payday</i></div>
-    <div class="sb-cell"><b id="stPaid">–</b><span>SOL paid to kowls</span><i id="stWithdrawn">withdrawn on-chain</i></div>
-    <div class="sb-cell"><b id="stKowls">–</b><span>kowls</span><i id="stMemes">meme makers</i></div>
-    <div class="sb-cell sb-clock"><b id="stNext">–</b><span>next payday</span><i id="stEpoch">every 15 minutes</i></div>
-  </div>
-
-  <div class="pay-grid">
-    <div class="receipt how" aria-labelledby="howH">
-      <p class="rc-top">KOWL PAYROLL<br><small>how it works · receipt no. 0001</small></p>
-      <h3 id="howH" class="sr-only">how kowl payroll works</h3>
-      <ol class="rc-steps">
-        <li><b>01</b><div><h4>sign in with google</h4><p>no wallet needed to start. you get a kowl account with a SOL balance.</p></div></li>
-        <li><b>02</b><div><h4>make memes, bagwork on X</h4><p>upload $KOWL memes here: a human checks each one before it goes public. link your X and paste your bagwork posts: they're checked automatically in seconds.</p></div></li>
-        <li><b>03</b><div><h4>earn points</h4><p>memes, "best" picks, views and shares on this site, and bagwork all earn points.</p></div></li>
-        <li><b>04</b><div><h4>payday every 15 min</h4><p>the fees that came in are split by the points kowls earned in the last 24h, straight into balances.</p></div></li>
-        <li><b>05</b><div><h4>withdraw anytime</h4><p>send your SOL to any Solana address, from 0.01 SOL. every withdrawal has a solscan receipt.</p></div></li>
+    <div class="liturgy reveal" id="liturgy">
+      <h3 class="sub-h">the liturgy <small>how kowl payroll works</small></h3>
+      <ol class="steps">
+        <li><span class="step-n">1</span><b>sign in with google</b><p>you get a kowl account with a SOL balance. no wallet needed until you withdraw.</p></li>
+        <li><span class="step-n">2</span><b>make offerings</b><p>upload $KOWL memes (a human approves them first) and post disclosed bagwork on X from your linked account.</p></li>
+        <li><span class="step-n">3</span><b>earn points</b><p>memes, picks, on-site engagement and bagwork earn points. bagwork is checked automatically in seconds.</p></li>
+        <li><span class="step-n">4</span><b>payday, every 15 min</b><p>the creator fees that came in are split by the points each kowl earned in the last 24h and credited to balances.</p></li>
+        <li><span class="step-n">5</span><b>withdraw anytime</b><p>send your SOL to any Solana address. every withdrawal is an on-chain transfer, listed here with its receipt.</p></li>
       </ol>
-      <p class="rc-thanks">thank you for disclosing.</p>
-      <div class="barcode" aria-hidden="true"></div>
     </div>
 
-    <div class="pay-side">
-      <div class="receipt points-table">
-        <p class="rc-top">POINTS<br><small>per kowl · trailing 24h</small></p>
-        <p class="pt-note">every payday splits the new fees by the points kowls earned in the last 24h, so an approved meme keeps earning for a full day.</p>
-        <dl>
-          <div><dt>approved meme</dt><dd>+10</dd></div>
-          <div class="star"><dt>"best" star from the kowl team</dt><dd>+30</dd></div>
-          <div><dt>engagement on this site (views, shares, downloads)</dt><dd>up to +20 <small>per meme</small></dd></div>
-          <div><dt>X bagwork: your post starts with "paid by $KOWL"</dt><dd>+8 <small>per post, 3 a day</small></dd></div>
-        </dl>
-        <p class="rc-total"><span>secret payments</span><b>0</b></p>
+    <div class="offerings reveal">
+      <div class="table-wrap">
+        <h3 class="sub-h">the offering table <small>points per payday window</small></h3>
+        <table class="points">
+          <tbody>
+            <tr><th scope="row">approved meme <small>a human checks it first · max 3 a day</small></th><td>+10</td></tr>
+            <tr><th scope="row">"best" pick <small>a mod stars it</small></th><td>+30</td></tr>
+            <tr><th scope="row">engagement on kowl.fun <small>views, shares, downloads of your meme</small></th><td>up to +20</td></tr>
+            <tr><th scope="row">X bagwork <small>starts with "paid by $KOWL", under 48h old · max 3 a day · automatic</small></th><td>+8 each</td></tr>
+          </tbody>
+        </table>
       </div>
-
-      <div class="cap-card">
-        <h3>the split</h3>
-        <p><b>7 or more active kowls:</b> nobody takes more than 15% of a payday. the excess is re-split among the others.</p>
-        <p><b>fewer than 7:</b> a straight split by points.</p>
-        <p class="mut">a pool too small to split rolls over to the next payday.</p>
+      <div class="split-note">
+        <p><b>the split.</b> each payday shares the new fees by points earned in the trailing 24 hours. with 7 or more active kowls, nobody takes more than 15% of one payday (the excess goes to everyone else). with fewer, it's a straight split by points.</p>
+        <p><b>the fine print.</b> withdrawals from 0.01 SOL. paydays credit balances on this site; withdrawals are the on-chain part. delete a bagwork post and its points go with it. payroll isn't available in the UK, the EU or Australia.</p>
+        <p class="fee-wallet">fee wallet: <span id="feeWallet">published at launch</span></p>
       </div>
     </div>
-  </div>
 
-  <div class="versus">
-    <div class="vs-col kol">
-      <h3>a KOL</h3>
-      <div class="tw">
-        <img src="img/kowl-head-256.png" alt="" width="40" height="40">
-        <div><b>kowl</b> <svg class="vcheck" viewBox="0 0 22 22" aria-label="verified"><path d="M20.4 11c0-1.3-.8-2.5-2-3.1.4-1.3.2-2.7-.7-3.6s-2.3-1.2-3.6-.7c-.6-1.2-1.8-2-3.1-2s-2.5.8-3.1 2c-1.3-.5-2.7-.2-3.6.7s-1.2 2.3-.7 3.6c-1.2.6-2 1.8-2 3.1s.8 2.5 2 3.1c-.5 1.3-.2 2.7.7 3.6s2.3 1.2 3.6.7c.6 1.2 1.8 2 3.1 2s2.5-.8 3.1-2c1.3.5 2.7.2 3.6-.7s1.2-2.3.7-3.6c1.2-.6 2-1.8 2-3.1zm-10.6 4-3.6-3.6 1.4-1.4 2.2 2.2 4.9-5.3 1.5 1.3z"/></svg> <span class="mut">@KowlFun · 3:00pm</span><p>not paid btw. this is the one 🫵 nfa</p></div>
+    <div class="sermon reveal">
+      <div class="sermon-v">
+        <video id="sermonVideo" src="video/kowl_ama.mp4" poster="video/kowl_ama.jpg" controls playsinline preload="none" width="1920" height="1080"></video>
       </div>
-      <div class="tw reply">
-        <span class="av">🫠</span>
-        <div><b>a kowl 🫠</b> <span class="mut">@notkowl · 3:01pm</span><p class="ask">who paid you?</p></div>
-      </div>
-      <div class="tw-end">this post was deleted by the post author.</div>
-      <p class="vs-note">"who paid you?" is a game: @KowlFun posts fake shills, kowls ask. never under real people.</p>
-    </div>
-    <div class="vs-col kowl">
-      <h3>a kowl</h3>
-      <div class="tw">
-        <span class="av">🫠</span>
-        <div><b>you 🫠</b> <span class="mut">@yourname · 3:00pm</span><span class="pp">Paid partnership</span><p>paid by <span class="cash">$KOWL</span> 🫠 kowl just called his 41st "the one" today.</p></div>
-      </div>
-      <div class="tw reply">
-        <img src="img/kowl-head-256.png" alt="" width="40" height="40">
-        <div><b>kowl research 🔬</b> <span class="mut">@kowlresearch · 3:01pm</span><p class="ask">who paid you?</p></div>
-      </div>
-      <div class="tw reply">
-        <span class="av">🫠</span>
-        <div><b>you 🫠</b> <span class="mut">@yourname · 3:01pm</span><p class="answer"><span class="cash">$KOWL</span> did. it's on-chain. 🫠</p></div>
+      <div class="sermon-t">
+        <p class="eyebrow">the sermon</p>
+        <h3>kowl's AMA <small>3:01</small></h3>
+        <p>the founder of the order answers the congregation's questions. he answers none of them. a perfect KOL.</p>
       </div>
     </div>
-  </div>
-
-  <div class="x-note">
-    <span class="x-note-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.3l4.4 5.9zm-1.1 16.2h1.7L7.4 4.7H5.6z"/></svg></span>
-    <p><b>bagwork on X?</b> start the post with "paid by $KOWL", turn on X's Paid Partnership label, then paste its link here. if it's your linked account's post and under 48h old, it's credited +8 points in seconds (up to 3 a day). delete it and the points go too. that's the joke and the law. payroll never pays for likes, replies or raids.</p>
-  </div>
-
-  <div class="fee-flow">
-    <h3>where the money goes</h3>
-    <ol class="flow-row">
-      <li><b>every trade</b><span>pump.fun pays a creator fee in SOL into the creator vault</span></li>
-      <li><b>claimed → payroll wallet</b><span id="feeWallet">address published at launch</span></li>
-      <li><b>payday every 15 min</b><span>100% split by 24h points into kowl balances. with 7+ kowls, max 15% each and the excess is re-split</span></li>
-      <li><b>withdraw anytime</b><span>to any Solana address, with a solscan receipt below</span></li>
-    </ol>
-  </div>
-
-  <details class="fine">
-    <summary>the fine print</summary>
-    <ul>
-      <li>with 7 or more active kowls, nobody takes more than 15% of one payday and the excess is re-split among the others. with fewer than 7, it's a straight split by points. a pool too small to split rolls over to the next payday.</li>
-      <li>up to 3 meme uploads a day. a human checks every upload before it goes public.</li>
-      <li>engagement counts once per visitor per day. your own views don't count.</li>
-      <li>bagwork: a post from your linked X account that starts with "paid by $KOWL" and is under 48 hours old, with X's Paid Partnership label on. it's checked automatically: +8 points each, up to 3 a day. a deleted post loses its points.</li>
-      <li>withdraw from 0.01 SOL. over 1 SOL, or from accounts younger than 24h, a human approves it first.</li>
-      <li>before launch, memes, profiles and points work. paydays and withdrawals start when $KOWL is live.</li>
-      <li>payroll is moderated and discretionary: stolen memes, alts and farming get removed, and the account's balance is frozen.</li>
-      <li>not available in the UK, the EU or Australia.</li>
-    </ul>
-  </details>
-
-  <div class="board">
-    <div class="board-head">
-      <h3>paid in public</h3>
-      <div class="seg" role="tablist" aria-label="payroll data">
-        <button class="on" data-board="leaders" role="tab" aria-selected="true">leaderboard</button>
-        <button data-board="credits" role="tab" aria-selected="false">payroll</button>
-        <button data-board="withdrawals" role="tab" aria-selected="false">withdrawals</button>
-      </div>
-    </div>
-    <div class="board-pane" data-pane="leaders">
-      <div class="seg small" id="lbRange" aria-label="range">
-        <button class="on" data-range="24h">last 24h</button><button data-range="7d">7d</button><button data-range="all">all time</button>
-      </div>
-      <div class="board-list" id="leaders"></div>
-    </div>
-    <div class="board-pane" data-pane="credits" hidden><div class="board-list" id="credits"></div></div>
-    <div class="board-pane" data-pane="withdrawals" hidden><div class="board-list" id="withdrawals"></div></div>
   </div>
 </section>
 
-<!-- ================= CH 05 · BECOME A KOWL ================= -->
-<section class="ch ch-join join" id="join" data-ch="5" data-name="BECOME A KOWL" data-pose="gm" aria-labelledby="joinTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 05</span>
-    <span class="kicker">now anyone can be a kowl</span>
-    <h2 id="joinTitle">become a kowl</h2>
-    <p class="ch-lead">sign in, make memes, get paid in public. no wallet needed until you withdraw.</p>
-  </div>
+<!-- ================= III. initiation ================= -->
+<section class="sec ink" id="initiation" aria-labelledby="initTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">iii</span>
+      <p class="eyebrow light">initiation</p>
+      <h2 id="initTitle">become a <em>kowl.</em></h2>
+      <p class="sec-lede">three steps. sign in, pick your name and your face, take your card. the card is yours to post: it says you're paid, in public.</p>
+    </header>
 
-  <ol class="strip">
-    <li><b>1</b><span>sign in with google<small>free, no wallet needed</small></span></li>
-    <li><b>2</b><span>make memes, bagwork on X<small>memes get a human check, bagwork is instant</small></span></li>
-    <li><b>3</b><span>get paid every 15 min<small>withdraw SOL anytime</small></span></li>
-  </ol>
-
-  <div class="join-grid">
-    <div class="app-card" id="appCard" data-state="offline">
-      <span class="tape t-l" aria-hidden="true"></span><span class="tape t-r" aria-hidden="true"></span>
-      <div class="signin" id="signinBox">
-        <img src="img/kowl-sus.webp" alt="" width="800" height="800" loading="lazy">
-        <div>
-          <b id="signinTitle">sign-in opens at launch</b>
-          <span id="signinSub">make your memes now. the moment payroll opens you can sign in with google and upload them.</span>
-          <div class="gsi" id="gsiBtn"></div>
-        </div>
-      </div>
-
-      <div class="actions" id="actions" hidden>
-        <form class="upload" id="uploadForm" novalidate>
-          <h3 class="h4">upload a meme <small>+10 points when approved</small></h3>
-          <label class="drop" id="drop">
-            <input type="file" id="upFile" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm">
-            <span class="drop-empty" id="dropEmpty"><b>choose an image or video</b><small>png, jpg, webp, gif up to 5 MB · mp4, webm up to 15 MB</small></span>
-            <span class="drop-prev" id="dropPrev" hidden></span>
-          </label>
-          <div class="up-fields one">
-            <label><span>title</span><input id="upTitle" maxlength="80" placeholder="kowl calls his 41st &quot;the one&quot;" autocomplete="off"></label>
+    <div class="init-grid">
+      <div class="init-steps">
+        <div class="istep" id="stepSign">
+          <span class="istep-n">i.</span>
+          <div class="istep-b">
+            <h3 id="signinTitle">sign the register</h3>
+            <p id="signinSub">one tap with google. your email is never shown anywhere.</p>
+            <div class="gsi" id="gsiBtn"></div>
+            <div class="signed-as" id="signedAs" hidden>
+              <img id="meAvatar" src="img/kowl-head-256.webp" alt="" width="44" height="44" referrerpolicy="no-referrer">
+              <div><b id="meName">kowl</b><span id="meSub"></span></div>
+              <button class="link-btn" id="signOut" type="button">sign out</button>
+            </div>
           </div>
-          <label class="attest"><input type="checkbox" id="upAttest"><span>this is my own meme and i'm not in the UK, EU or Australia</span></label>
-          <button class="btn big blue" id="upBtn">upload for review</button>
-          <p class="form-msg" id="upMsg" aria-live="polite"></p>
-        </form>
-
-        <div class="xlink" id="xBox">
-          <h3 class="h4">link your X <small>needed for bagwork</small></h3>
-          <div id="xState"></div>
-          <form class="inline" id="xForm" novalidate>
-            <input id="xHandle" maxlength="16" placeholder="@yourhandle" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="your X handle">
-            <button class="btn" id="xBtn">get my code</button>
-          </form>
-          <form class="inline" id="xVerifyForm" hidden novalidate>
-            <input id="xUrl" type="url" inputmode="url" placeholder="https://x.com/you/status/…" autocomplete="off" aria-label="link to your post with the code">
-            <button class="btn blue" id="xVerifyBtn">verify</button>
-          </form>
-          <p class="form-msg" id="xMsg" aria-live="polite"></p>
         </div>
 
-        <form class="bagwork" id="bagForm" novalidate>
-          <h3 class="h4">submit bagwork <small>+8 points, 3 a day</small></h3>
-          <p class="rule">your post must <b>start with "paid by $KOWL"</b>, come from your linked X and be under 48h old. turn on <b>X's Paid Partnership label</b>. it's checked automatically in seconds; delete the post and the points go too. no raids, no reply spam, no tagging real accounts.</p>
-          <input id="bagUrl" type="url" inputmode="url" placeholder="https://x.com/you/status/…" autocomplete="off" aria-label="link to your X post">
-          <button class="btn blue" id="bagBtn">submit</button>
-          <p class="form-msg" id="bagMsg" aria-live="polite"></p>
-        </form>
+        <div class="istep">
+          <span class="istep-n">ii.</span>
+          <div class="istep-b">
+            <h3>take a name</h3>
+            <form class="name-form" id="nameForm" autocomplete="off">
+              <label class="lbl" for="nameInput">your kowl name <small>(put 🫠 in it)</small></label>
+              <div class="field-row">
+                <input id="nameInput" maxlength="24" placeholder="e.g. sir melts-a-lot 🫠" spellcheck="false">
+                <button class="btn gold sm" id="nameSave" type="submit">swear it in</button>
+              </div>
+              <p class="form-msg" id="nameMsg" role="status"></p>
+              <label class="lbl" for="pfpName">your X handle <small>(goes on the gold plaque)</small></label>
+              <input id="pfpName" maxlength="16" placeholder="@yourhandle" spellcheck="false" autocapitalize="off">
+            </form>
+          </div>
+        </div>
+
+        <div class="istep">
+          <span class="istep-n">iii.</span>
+          <div class="istep-b">
+            <h3>choose your vestments</h3>
+            <p class="lbl">pose</p>
+            <div class="pose-grid" id="poseGrid" role="radiogroup" aria-label="pose"></div>
+            <p class="lbl">background</p>
+            <div class="bg-grid" id="bgGrid" role="radiogroup" aria-label="background"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="init-out">
+        <figure class="card-fig">
+          <canvas id="cardCanvas" width="1600" height="1000" aria-label="your kowl membership card"></canvas>
+          <figcaption id="cardCap">an unsworn card. sign in, then your first approved meme or accepted bagwork gives you your kowl number.</figcaption>
+        </figure>
+        <div class="btn-row">
+          <button class="btn gold" id="cardDl" type="button">download your kowl card</button>
+          <button class="btn line light" id="cardPost" type="button">share it on X ↗</button>
+        </div>
+        <div class="pfp-row">
+          <canvas id="pfpCanvas" width="1024" height="1024" aria-label="your kowl pfp"></canvas>
+          <div>
+            <h3 class="pfp-h">your kowl pfp</h3>
+            <p class="mut-l">1024×1024, your handle on the chain. set it as your pfp and put 🫠 in your name.</p>
+            <button class="btn line light sm" id="pfpDl" type="button">download pfp</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <aside class="me-card" id="meCard" aria-label="my kowl">
-      <div class="lanyard" aria-hidden="true"></div>
-      <p class="badge-top">KOWL PAYROLL · STAFF<span>every paid post says it's paid</span></p>
-      <div class="me-head">
-        <img id="meAvatar" src="img/kowl-head-256.png" alt="" width="56" height="56" referrerpolicy="no-referrer">
-        <div><small>my kowl</small><b id="meName">not signed in</b><span id="meSub" class="mut">sign in to see your kowl balance</span></div>
-        <button class="me-edit" id="nameEdit" hidden>edit</button>
+    <!-- the sanctum: your kowl -->
+    <div class="sanctum" id="sanctum" data-signed="no">
+      <div class="sanctum-lock" id="sanctumLock">
+        <p class="eyebrow light">the sanctum</p>
+        <p>your balance, your bagwork and your withdrawals live here once you've signed the register.</p>
       </div>
-      <form class="name-form" id="nameForm" hidden novalidate><input id="nameInput" maxlength="24" autocomplete="off" aria-label="display name"><button class="btn">save</button></form>
-      <div class="balance"><small>kowl balance</small><b id="meBalance">0</b><span>SOL</span></div>
-      <div class="me-stats">
-        <div><b id="meEarned">0</b><span>SOL earned</span></div>
-        <div><b id="meWithdrawn">0</b><span>SOL withdrawn</span></div>
-        <div><b id="mePoints">0</b><span>points (last 24h)</span></div>
-      </div>
-      <form class="wd-form" id="wdForm" novalidate>
-        <h3 class="h4">withdraw</h3>
-        <input id="wdAddr" placeholder="your Solana address" autocomplete="off" spellcheck="false" aria-label="Solana address">
-        <div class="wd-amt"><input id="wdAmt" inputmode="decimal" placeholder="0.00" autocomplete="off" aria-label="amount in SOL"><span>SOL</span><button type="button" class="mini-btn" id="wdMax">max</button></div>
-        <button class="btn blue" id="wdBtn">withdraw</button>
-        <p class="form-msg" id="wdMsg" aria-live="polite"></p>
-      </form>
-      <div class="seg small me-tabs" id="meTabs">
-        <button class="on" data-me="memes">memes</button><button data-me="bagwork">bagwork</button><button data-me="withdrawals">withdrawals</button><button data-me="ledger">ledger</button>
-      </div>
-      <div class="me-posts" id="meList"><p class="empty">your memes, bagwork, withdrawals and ledger show up here.</p></div>
-      <button class="link-btn signout" id="signOut" hidden>sign out</button>
-    </aside>
-  </div>
+      <div class="sanctum-body" id="sanctumBody">
+        <header class="sanctum-head">
+          <div>
+            <p class="eyebrow light">the sanctum · <span id="meNo">kowl #????</span> <span class="genesis" id="meGenesis" hidden>genesis</span></p>
+            <h3 class="sanctum-rank"><span id="meRank">initiate</span> <small id="meRankNext"></small></h3>
+            <div class="rank-bar" aria-hidden="true"><i id="meRankBar"></i></div>
+            <p class="streak" id="meStreak"><span class="streak-melt" aria-hidden="true">🫠</span><b id="meStreakDays">0</b> day melt streak <span id="meStreakMeta">· best 0 · ❄ 0 freezes</span></p>
+          </div>
+          <dl class="ledger-top">
+            <div class="big"><dt>kowl balance</dt><dd><span id="meBalance">0</span> <small>SOL</small></dd></div>
+            <div><dt>earned</dt><dd id="meEarned">0</dd></div>
+            <div><dt>withdrawn</dt><dd id="meWithdrawn">0</dd></div>
+            <div><dt>points, last 24h</dt><dd id="mePoints">0</dd></div>
+            <div><dt>lifetime points</dt><dd id="meLife">0</dd></div>
+          </dl>
+        </header>
 
-  <div class="rules-wrap">
-    <span class="tape t-c" aria-hidden="true"></span>
-    <h3>rules for kowls</h3>
-    <ol class="rules">
-      <li><b>01</b><span>nobody gets paid in secret. if a paid post goes on X, it starts with <q>paid by $KOWL</q> and has the Paid Partnership label on.</span></li>
-      <li><b>02</b><span><q>who paid you?</q> goes under @KowlFun's fake shills. never under real people.</span></li>
-      <li><b>03</b><span>no KOL round. no early wallets. no alpha group. 100% of fees go to kowls.</span></li>
-      <li><b>04</b><span>no raids, no reply spam, no tagging real accounts, no stolen memes, no alts. farmers get banned.</span></li>
-      <li><b>05</b><span>put 🫠 in your name.</span></li>
-    </ol>
-    <div class="rules-btns">
-      <button class="btn big blue" id="copyAnswer">copy "$KOWL did. it's on-chain. 🫠"</button>
-      <button class="btn big ghost" id="copyMelt">copy 🫠 for your name</button>
+        <div class="sanctum-grid">
+          <div class="panel" id="xPanel">
+            <h4>link your X</h4>
+            <div id="xState"></div>
+            <form class="field-row" id="xForm" autocomplete="off">
+              <input id="xHandle" maxlength="16" placeholder="@yourhandle" aria-label="your X handle" spellcheck="false" autocapitalize="off">
+              <button class="btn gold sm" type="submit">get my code</button>
+            </form>
+            <form class="field-row" id="xVerifyForm" autocomplete="off" hidden>
+              <input id="xUrl" placeholder="https://x.com/you/status/…" aria-label="link to your post with the code" inputmode="url">
+              <button class="btn gold sm" id="xVerifyBtn" type="submit">verify</button>
+            </form>
+            <p class="form-msg" id="xMsg" role="status"></p>
+          </div>
+
+          <div class="panel" id="bagPanel">
+            <h4>submit bagwork <small>+8 · max 3 a day</small></h4>
+            <p class="mut-l">post on X from your linked account, starting with <code>paid by $KOWL</code>, Paid Partnership label on. paste the link: it's checked automatically in seconds.</p>
+            <form class="field-row" id="bagForm" autocomplete="off">
+              <input id="bagUrl" placeholder="https://x.com/you/status/…" aria-label="link to your bagwork post" inputmode="url">
+              <button class="btn gold sm" id="bagBtn" type="submit">submit</button>
+            </form>
+            <p class="form-msg" id="bagMsg" role="status"></p>
+          </div>
+
+          <div class="panel" id="wdPanel">
+            <h4>withdraw <small>min 0.01 SOL</small></h4>
+            <form id="wdForm" autocomplete="off">
+              <input id="wdAddr" placeholder="your Solana address" aria-label="Solana address" spellcheck="false" autocapitalize="off">
+              <div class="field-row">
+                <input id="wdAmt" placeholder="amount in SOL" inputmode="decimal" aria-label="amount in SOL">
+                <button class="btn line light sm" id="wdMax" type="button">max</button>
+              </div>
+              <button class="btn gold wide" id="wdBtn" type="submit">withdraw</button>
+            </form>
+            <p class="form-msg" id="wdMsg" role="status"></p>
+            <p class="mut-l small">over 1 SOL, or from accounts younger than 24h, a human approves it first.</p>
+          </div>
+        </div>
+
+        <div class="me-tabs" id="meTabs" role="tablist" aria-label="your records">
+          <button class="on" role="tab" aria-selected="true" data-me="memes">memes</button>
+          <button role="tab" aria-selected="false" data-me="bagwork">bagwork</button>
+          <button role="tab" aria-selected="false" data-me="withdrawals">withdrawals</button>
+          <button role="tab" aria-selected="false" data-me="ledger">ledger</button>
+        </div>
+        <div class="me-list" id="meList"></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ================= CH 06 · MEMES ================= -->
-<section class="ch ch-memes" id="memes" data-ch="6" data-name="THE MEME WALL" data-pose="derp" aria-labelledby="memesTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 06</span>
-    <span class="kicker">ammo</span>
-    <h2 id="memesTitle">the meme wall</h2>
-    <p class="ch-lead">two walls. the kowl gallery is made by kowls and checked by a human: viewing, sharing and downloading earns their makers points. the meme pack is free ammo: take it, post it, remix it.</p>
-  </div>
+<!-- ================= IV. the 3:00pm call ================= -->
+<section class="sec paper" id="mission" aria-labelledby="missionTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">iv</span>
+      <p class="eyebrow">today's mission · the 3:00pm call</p>
+      <h2 id="missionTitle">one call. <em>the whole order.</em></h2>
+      <p class="sec-lede">every day at 15:00 UTC kowl drops the call, the same for everyone (47 KOLs post at 3:00pm; so do we, but we say so). make a meme on the prompt, or post the ready one in ten seconds.</p>
+    </header>
 
-  <div class="gallery-sec" id="gallery-sec">
-    <div class="wall-head">
-      <h3>the kowl gallery</h3>
-      <div class="seg" id="galSort" aria-label="sort">
+    <div class="call-bar">
+      <div class="call-now">
+        <span class="call-tag" id="callTag">call no. 1 · dropped 15:00 UTC</span>
+        <p class="call-prompt" id="callPrompt">kowl deletes the tweet.</p>
+      </div>
+      <div class="call-next">
+        <span id="callNextLbl">next call in</span>
+        <b id="callCountdown">--:--:--</b>
+      </div>
+    </div>
+
+    <div class="mission">
+      <figure class="mission-meme">
+        <img id="missionImg" src="memes/thumb/01_who_paid_you.webp" alt="the ready meme for today's call" width="1080" height="1080" loading="lazy">
+        <span class="mission-stamp" aria-hidden="true">paid<br>by $KOWL</span>
+      </figure>
+      <div class="mission-copy">
+        <label class="lbl" for="missionText">the caption <small>(starts with "paid by $KOWL": that's the rule and the joke)</small></label>
+        <textarea id="missionText" rows="5" spellcheck="false"></textarea>
+        <div class="btn-row">
+          <a class="btn x" id="missionPost" href="https://x.com/intent/post" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 2.25h3.3l-7.2 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg>post on X</a>
+          <button class="btn line" id="missionCopy" type="button">copy caption</button>
+          <a class="btn line" id="missionDl" href="memes/01_who_paid_you.jpg" download>download meme</a>
+          <button class="link-btn" id="missionReroll" type="button">another caption</button>
+        </div>
+        <ol class="mission-steps">
+          <li><b>download</b> the meme (X's post button can't attach it for you).</li>
+          <li><b>post</b> with the caption and attach the image.</li>
+          <li><b>turn on</b> X's Paid Partnership label in the post settings.</li>
+          <li><b>paste the link</b> in the sanctum. checked in seconds, +8 points. <a href="#bagPanel">go →</a></li>
+        </ol>
+        <p class="call-own">better: make your own meme on today's prompt and <a href="#vault" data-vault-open="offer">offer it in the vault</a>. +10 when a human approves it, +30 if it's the call's best pick.</p>
+        <p class="mut small">payroll isn't available in the UK, the EU or Australia. never tag real people, never reply-spam. "who paid you?" only goes under @KowlFun's own fake shills.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= V. the shill board ================= -->
+<section class="sec paper-2" id="board" aria-labelledby="boardTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">v</span>
+      <p class="eyebrow">the shill board</p>
+      <h2 id="boardTitle">every paid post, <em>pinned to the door.</em></h2>
+      <p class="sec-lede">accepted bagwork from the order, newest first. each one starts with "paid by $KOWL" and was checked automatically. deleted posts lose their points.</p>
+    </header>
+    <div class="board" id="shillBoard"></div>
+    <button class="btn line" id="boardMore" type="button" hidden>show more</button>
+  </div>
+</section>
+
+<!-- ================= VI. the congregation ================= -->
+<section class="sec ink" id="congregation" aria-labelledby="congTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">vi</span>
+      <p class="eyebrow light">the congregation</p>
+      <h2 id="congTitle">paid <em>in public.</em></h2>
+    </header>
+
+    <div class="bell" id="prStatus" data-state="offline">
+      <div class="bell-l">
+        <svg class="bell-ico" id="bellIco" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6a4 4 0 0 1 4 4v1.6c8.6 1.8 14 9.3 14 18.4v10.5l5 7.5H9l5-7.5V30c0-9.1 5.4-16.6 14-18.4V10a4 4 0 0 1 4-4z"/><circle cx="32" cy="53" r="5"/></svg>
+        <div>
+          <p class="eyebrow light">the payday bell</p>
+          <b class="bell-count" id="stNext2">at launch</b>
+          <span class="bell-title" id="prStatusTitle">payroll opens at launch</span>
+          <span class="bell-sub" id="prStatusSub">sign-in, memes and points already work. paydays and withdrawals start when $KOWL is live.</span>
+        </div>
+      </div>
+      <div class="bell-feed">
+        <p class="lbl">just got paid</p>
+        <div class="bell-strip"><div class="bell-run" id="bellRun"></div></div>
+      </div>
+    </div>
+
+    <dl class="stats" id="stats">
+      <div><dt>in the pool</dt><dd><span id="stPool">–</span> <small>SOL</small></dd><span class="st-sub" id="stRollover">since the last payday</span></div>
+      <div><dt>payday every</dt><dd><span id="stEvery">15</span> <small>min</small></dd><span class="st-sub" id="stEpoch">from launch</span></div>
+      <div><dt>credited to kowls</dt><dd><span id="stPaid2">–</span> <small>SOL</small></dd><span class="st-sub" id="stWithdrawn">withdrawn on-chain</span></div>
+      <div><dt>kowls with an approved meme</dt><dd id="stKowls2">–</dd><span class="st-sub" id="stMemes2">memes in play</span></div>
+    </dl>
+
+    <div class="cong-grid">
+      <div class="boards">
+        <div class="seg" role="tablist" aria-label="boards">
+          <button class="on" role="tab" aria-selected="true" data-board="leaders">the faithful</button>
+          <button role="tab" aria-selected="false" data-board="credits">payday credits</button>
+          <button role="tab" aria-selected="false" data-board="withdrawals">withdrawals</button>
+        </div>
+        <div data-pane="leaders">
+          <div class="seg small" id="lbRange" aria-label="range">
+            <button class="on" data-range="24h">24h</button><button data-range="7d">7 days</button><button data-range="all">all time</button>
+          </div>
+          <div class="rows" id="leaders"></div>
+        </div>
+        <div data-pane="credits" hidden><div class="rows" id="credits"></div></div>
+        <div data-pane="withdrawals" hidden><div class="rows" id="withdrawals"></div></div>
+      </div>
+
+      <aside class="hierarchy" aria-labelledby="hierTitle">
+        <h3 class="sub-h light" id="hierTitle">the hierarchy <small>by lifetime points</small></h3>
+        <ol class="ranks" id="ranks"></ol>
+      </aside>
+    </div>
+
+    <div class="chart" id="chart" hidden>
+      <iframe id="chartFrame" title="$KOWL chart" loading="lazy"></iframe>
+      <div class="verify" id="verifyRow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VII. the meme vault ================= -->
+<section class="sec paper" id="vault" aria-labelledby="vaultTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">vii</span>
+      <p class="eyebrow">the meme vault</p>
+      <h2 id="vaultTitle">the <em>scriptures.</em></h2>
+      <p class="sec-lede">the canon is free ammo: take any of them. the congregation's memes are approved by a human and earn their makers points.</p>
+    </header>
+
+    <div class="seg dark" role="tablist" aria-label="vault">
+      <button class="on" role="tab" aria-selected="true" data-vault="canon">the canon <small id="canonCount">34</small></button>
+      <button role="tab" aria-selected="false" data-vault="gallery">the congregation's</button>
+      <button role="tab" aria-selected="false" data-vault="offer">make an offering</button>
+    </div>
+
+    <div data-vault-pane="canon">
+      <div class="meme-grid clipped" id="memeGrid"></div>
+      <button class="btn line" id="moreMemes" type="button" hidden>show the whole canon</button>
+    </div>
+
+    <div data-vault-pane="gallery" hidden>
+      <div class="seg small dark" id="galSort" aria-label="sort">
         <button class="on" data-sort="new">new</button><button data-sort="top">top</button><button data-sort="best">⭐ best</button>
       </div>
+      <div class="gallery" id="gallery"></div>
+      <button class="btn line" id="galMore" type="button" hidden>load more</button>
     </div>
-    <div class="gallery" id="gallery"></div>
-    <button class="btn ghost more-memes" id="galMore" hidden>load more</button>
-  </div>
 
-  <div class="pack">
-    <div class="wall-head"><h3>the meme pack</h3><p class="mut">made a better one? <a href="#join">upload it</a> and earn points.</p></div>
-    <div class="meme-grid" id="memeGrid"><p class="mut">loading memes…</p></div>
-    <button class="btn ghost more-memes" id="moreMemes" hidden>show all memes</button>
-  </div>
-</section>
-
-<!-- ================= CH 07 · KOWL TV ORIGINALS ================= -->
-<section class="ch ch-tv" id="tv" data-ch="7" data-name="KOWL TV ORIGINALS" data-pose="shill" aria-labelledby="tvTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 07</span>
-    <span class="kicker">now showing</span>
-    <h2 id="tvTitle">kowl tv originals</h2>
-    <p class="ch-lead">kowl sat down for an AMA. it went exactly how you think. plus three clips cut for your timeline.</p>
-  </div>
-  <div class="theater">
-    <figure class="tv-set">
-      <div class="tv-frame">
-        <video id="amaVideo" class="lazy-video" controls playsinline preload="none" data-poster="video/kowl_ama.jpg" data-src="video/kowl_ama.mp4" aria-label="the kowl AMA"></video>
-      </div>
-      <figcaption><b>S01E01 · the kowl AMA</b> kowl answers your questions. every answer is "this is the one".</figcaption>
-    </figure>
-    <div class="shorts">
-      <figure class="phone">
-        <video class="lazy-video" controls playsinline preload="none" data-poster="video/clip_who_paid_you.jpg" data-src="video/clip_who_paid_you.mp4" aria-label="clip: who paid you?"></video>
-        <figcaption><b>"who paid you?"</b>the reply always has more likes.</figcaption>
-      </figure>
-      <figure class="phone">
-        <video class="lazy-video" controls playsinline preload="none" data-poster="video/clip_the_one.jpg" data-src="video/clip_the_one.mp4" aria-label="clip: this is the one"></video>
-        <figcaption><b>"this is the one"</b>the 41st one today.</figcaption>
-      </figure>
-      <figure class="phone">
-        <video class="lazy-video" controls playsinline preload="none" data-poster="video/clip_seed_phrase.jpg" data-src="video/clip_seed_phrase.mp4" aria-label="clip: proof of bags"></video>
-        <figcaption><b>proof of bags</b>seed phrase clearly visible.</figcaption>
-      </figure>
-    </div>
-  </div>
-  <div class="schedule" aria-label="tonight on kowl tv (fictional)">
-    <h3>tonight on kowl tv</h3>
-    <ol>
-      <li><time>15:00</time><b>the 3pm call</b><span>47 KOLs, one coin, zero disclosure</span></li>
-      <li><time>15:01</time><b>exit race (live)</b><span>who sells first? not you.</span></li>
-      <li><time>15:47</time><b>deleted scenes</b><span>tweets you'll never see again (we archived them)</span></li>
-      <li><time>17:00</time><b>a break from CT</b><span>41 episodes back to back</span></li>
-      <li><time>every 15 min</time><b>payday</b><span>the only show where the money is on screen</span></li>
-    </ol>
-  </div>
-</section>
-
-<!-- ================= CH 08 · GET YOUR KOWL ================= -->
-<section class="ch ch-pfp pfp" id="pfp" data-ch="8" data-name="WARDROBE" data-pose="this-is-the-one" aria-labelledby="pfpTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 08</span>
-    <span class="kicker">wardrobe & makeup</span>
-    <h2 id="pfpTitle">get your kowl</h2>
-    <p class="ch-lead">a kowl pfp with your @ on the chain plaque. pick a face, pick a background, download, post.</p>
-  </div>
-  <div class="pfp-grid">
-    <div class="pfp-preview"><span class="tape t-l" aria-hidden="true"></span><canvas id="pfpCanvas" width="1000" height="1000" aria-label="your kowl pfp"></canvas><p class="scribble s3" aria-hidden="true">that's you →</p></div>
-    <div class="pfp-controls">
-      <label class="field-label" for="pfpName">your @</label>
-      <label class="handle-input"><span>@</span><input id="pfpName" maxlength="15" placeholder="yourname" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
-      <span class="field-label">face</span>
-      <div class="pose-grid" id="poseGrid" role="radiogroup" aria-label="pose"></div>
-      <span class="field-label">background</span>
-      <div class="bg-grid" id="bgGrid" role="radiogroup" aria-label="background"></div>
-      <div class="pfp-btns">
-        <button class="btn big blue" id="pfpDl">download PNG</button>
-        <button class="btn big x" id="pfpPost">post it</button>
-      </div>
-      <p class="hint">then put 🫠 in your name. that's how other kowls find you.</p>
+    <div data-vault-pane="offer" hidden>
+      <form class="offer" id="uploadForm" autocomplete="off">
+        <label class="drop" id="drop" for="upFile">
+          <input type="file" id="upFile" accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm">
+          <span class="drop-empty" id="dropEmpty"><b>drop your meme here</b>png, jpg, webp, gif up to 5 MB · mp4, webm up to 15 MB</span>
+          <span class="drop-prev" id="dropPrev" hidden></span>
+        </label>
+        <div class="offer-side">
+          <label class="lbl" for="upTitle">title</label>
+          <input id="upTitle" maxlength="80" placeholder="what kowl did this time">
+          <label class="check"><input type="checkbox" id="upAttest"> <span>it's my own meme, it doesn't target a real person, and I'm not in the UK, the EU or Australia.</span></label>
+          <button class="btn gold wide" id="upBtn" type="submit">upload for review</button>
+          <p class="form-msg" id="upMsg" role="status"></p>
+          <p class="mut small">max 3 a day. a human approves it before it's public: +10 points the moment it's approved.</p>
+        </div>
+      </form>
     </div>
   </div>
 </section>
 
-<!-- ================= CHART (hidden until CHART_URL is set in app.js) ================= -->
-<section class="ch ch-chart chart" id="chart" hidden aria-labelledby="chartTitle">
-  <div class="ch-head">
-    <span class="kicker">check it yourself</span>
-    <h2 id="chartTitle">chart</h2>
-    <p class="ch-lead">always copy the CA from this site or @KowlFun, never from a reply or a DM.</p>
-  </div>
-  <div class="chart-frame"><iframe id="chartFrame" title="$KOWL chart" loading="lazy" allow="clipboard-write" allowfullscreen></iframe></div>
-  <div class="verify-row" id="verifyRow"></div>
-</section>
-
-<!-- ================= CH 09 · TOOLKIT ================= -->
-<section class="ch ch-toolkit toolkit" id="toolkit" data-ch="9" data-name="THE KOL TOOLKIT" data-pose="nfa" aria-labelledby="toolkitTitle">
-  <div class="ch-head">
-    <span class="ch-num" aria-hidden="true">CH 09</span>
-    <span class="kicker">extras</span>
-    <h2 id="toolkitTitle">the KOL toolkit</h2>
-    <p class="ch-lead">for laughing at your timeline. everything you make here is meme fuel.</p>
-  </div>
-  <div class="seg tool-tabs" role="tablist" aria-label="tools">
-    <button class="on" data-tool="translate" role="tab" aria-selected="true">KOL → english</button>
-    <button data-tool="shill" role="tab" aria-selected="false">shill generator</button>
-    <button data-tool="bingo" role="tab" aria-selected="false">KOL bingo</button>
-    <button data-tool="quiz" role="tab" aria-selected="false">kowl'd?</button>
-  </div>
-
-  <div class="tool" data-tool-pane="translate" role="tabpanel">
-    <p class="tool-desc">paste any KOL post. get what it actually means.</p>
-    <div class="tr-grid">
-      <div class="tr-pane">
-        <div class="tr-label"><span>KOL</span><span class="tr-flag">🫡🚀💎</span></div>
-        <textarea id="trIn" rows="5" spellcheck="false" aria-label="KOL post to translate" placeholder="gm. been watching this one for a while. not paid btw, just a holder. we're so early. nfa">gm. been watching this one for a while 👀 not paid btw, i'm just a holder. we're so early. nfa</textarea>
+<!-- ================= VIII. the lexicon ================= -->
+<section class="sec paper-2" id="lexicon" aria-labelledby="lexTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">viii</span>
+      <p class="eyebrow">the lexicon</p>
+      <h2 id="lexTitle">KOL <span class="arrow">→</span> <em>english.</em></h2>
+      <p class="sec-lede">the order's dictionary. paste any KOL post and it translates it into what it means.</p>
+    </header>
+    <div class="translator">
+      <div class="tr-in">
+        <label class="lbl" for="trIn">KOL says</label>
+        <textarea id="trIn" rows="3" spellcheck="false">gm. been watching this one for a while. not financial advice</textarea>
         <div class="chips" id="trChips"></div>
       </div>
-      <div class="tr-swap" aria-hidden="true">→</div>
-      <div class="tr-pane out">
-        <div class="tr-label"><span>english</span><span class="tr-flag">🫠</span></div>
-        <div class="tr-out" id="trOut" aria-live="polite"></div>
-        <div class="tr-foot"><span id="trMeta"></span><button class="mini-btn" id="trCopy">copy</button></div>
+      <div class="tr-out">
+        <p class="lbl">it means</p>
+        <p class="tr-text" id="trOut" aria-live="polite"></p>
+        <div class="tr-foot"><span id="trMeta"></span><button class="btn line sm" id="trCopy" type="button">copy</button></div>
       </div>
     </div>
-  </div>
-
-  <div class="tool" data-tool-pane="shill" role="tabpanel" hidden>
-    <p class="tool-desc">type any coin. kowl will shill it. kowl shills everything. kowl does not check.</p>
-    <div class="shill-controls">
-      <label class="shill-input"><span>$</span><input id="shillCoin" maxlength="14" value="KOWL" autocomplete="off" spellcheck="false" aria-label="coin name"></label>
-      <button class="btn" id="shillNew">new shill</button>
-      <button class="btn ghost" id="shillTheme">dark mode</button>
-      <button class="btn blue" id="shillDl">download PNG</button>
-    </div>
-    <div class="canvas-wrap"><canvas id="shillCanvas" width="1200" height="1200" aria-label="generated kowl post"></canvas></div>
-  </div>
-
-  <div class="tool" data-tool-pane="bingo" role="tabpanel" hidden>
-    <p class="tool-desc">open your timeline. tick what you see. five in a row and you know what happened.</p>
-    <div class="bingo-card" id="bingoCard"></div>
-    <div class="bingo-foot">
-      <span id="bingoCount">0 / 24 marked</span>
-      <button class="btn ghost" id="bingoNew">new card</button>
-    </div>
-  </div>
-
-  <div class="tool" data-tool-pane="quiz" role="tabpanel" hidden>
-    <p class="tool-desc">have you been kowl'd? 4 questions. be honest.</p>
-    <div class="quiz-box" id="quizBox"></div>
+    <dl class="dict clipped" id="dict"></dl>
+    <button class="btn line" id="dictMore" type="button">open the whole lexicon</button>
   </div>
 </section>
 
-<!-- ================= SIGN-OFF ================= -->
-<footer class="ch signoff" id="signoff" data-ch="10" data-name="END OF BROADCAST" data-pose="cry">
-  <div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="credits">
-    <img class="foot-kowl" src="img/kowl-leaving.webp" alt="kowl leaving the studio" width="800" height="800" loading="lazy">
-    <p class="foot-big">kowl is a fictional blob. any resemblance to your favourite KOL is your problem.</p>
-    <dl class="roll">
-      <div><dt>anchor</dt><dd>kowl (no spine)</dd></div>
-      <div><dt>paid by</dt><dd>$KOWL. it's on-chain. 🫠</dd></div>
-      <div><dt>sponsored by</dt><dd>nobody, and we said so</dd></div>
-      <div><dt>catering</dt><dd>one (1) coffee, "#1 KOL" mug</dd></div>
-    </dl>
-    <p class="mut legal">$KOWL is a memecoin with no intrinsic value, no roadmap and no expectation of financial return. kowl payroll shares creator fees with kowls at its discretion and is moderated; it is not a salary, an investment or a promise, and it is not available in the UK, the EU or Australia. nothing here is financial advice. not even the "not financial advice". the posts, notes, coins, wallets and handles in the parody sections are made up.</p>
-    <div class="foot-links">
-      <a data-link="x" href="#" target="_blank" rel="noopener">X @KowlFun</a>
-      <a data-link="telegram" href="#" target="_blank" rel="noopener">telegram</a>
-      <a data-link="pump" href="#" target="_blank" rel="noopener">pump.fun</a>
-      <a href="terms.html">terms</a>
-      <a href="privacy.html">privacy</a>
-      <a href="#live">back to the studio ↑</a>
+<!-- ================= IX. the commandments ================= -->
+<section class="sec paper" id="commandments" aria-labelledby="cmdTitle">
+  <div class="wrap">
+    <header class="sec-head center">
+      <span class="numeral">ix</span>
+      <p class="eyebrow">the commandments</p>
+      <h2 id="cmdTitle">ten laws. <em>copy them.</em></h2>
+      <p class="sec-lede">the rules every kowl keeps, and why. each one has a copy button, because lore spreads by being quoted.</p>
+    </header>
+    <div class="tablets">
+      <ol class="tablet" id="tabletA"></ol>
+      <ol class="tablet" id="tabletB" start="6"></ol>
     </div>
-    <p class="mut tiny">© 2026 nobody. no rights reserved. every paid post says it's paid.</p>
+    <ul class="fine-print">
+      <li><b>one kowl, one account.</b> alts, bots and farms get banned and their balances frozen.</li>
+      <li><b>name no real person.</b> kowl is fiction. never picture, quote or accuse anyone real.</li>
+      <li><b>payroll is closed</b> in the UK, the EU and Australia. the pfp, the card and the commandments are open to everyone.</li>
+      <li><b>not financial advice.</b> it's a meme with no promises. that's the point. 🫠</li>
+    </ul>
+
+    <div class="responses">
+      <h3 class="sub-h center">call and response <small>when they say it, you say this</small></h3>
+      <div class="resp-grid" id="responses"></div>
+      <button class="link-btn" id="copyMelt" type="button">copy the 🫠 for your name</button>
+    </div>
   </div>
-</footer>
+</section>
+
+<!-- ================= X. rituals ================= -->
+<section class="sec ink" id="rituals" aria-labelledby="ritTitle">
+  <div class="wrap">
+    <header class="sec-head">
+      <span class="numeral">x</span>
+      <p class="eyebrow light">rituals</p>
+      <h2 id="ritTitle">tools of <em>the order.</em></h2>
+    </header>
+    <div class="seg" role="tablist" aria-label="rituals">
+      <button class="on" role="tab" aria-selected="true" data-tool="shill">fake shill maker</button>
+      <button role="tab" aria-selected="false" data-tool="bingo">KOL bingo</button>
+      <button role="tab" aria-selected="false" data-tool="quiz">have you been kowl'd?</button>
+    </div>
+
+    <div class="tool" data-tool-pane="shill">
+      <div class="shill">
+        <div class="shill-ctl">
+          <p>make kowl shill any coin, in a perfect KOL post. it's a parody: meme it, never post it as a real call.</p>
+          <label class="lbl" for="shillCoin">ticker</label>
+          <input id="shillCoin" maxlength="12" placeholder="KOWL" spellcheck="false" autocapitalize="characters">
+          <div class="btn-row">
+            <button class="btn gold sm" id="shillNew" type="button">new shill</button>
+            <button class="btn line light sm" id="shillTheme" type="button">dark mode</button>
+            <button class="btn line light sm" id="shillDl" type="button">download</button>
+          </div>
+        </div>
+        <canvas id="shillCanvas" width="1200" height="1700" aria-label="a fake kowl shill post"></canvas>
+      </div>
+    </div>
+
+    <div class="tool" data-tool-pane="bingo" hidden>
+      <div class="bingo-top"><span id="bingoCount">0 / 24 marked</span><button class="btn line light sm" id="bingoNew" type="button">new card</button></div>
+      <div class="bingo" id="bingoCard"></div>
+    </div>
+
+    <div class="tool" data-tool-pane="quiz" hidden>
+      <div class="quiz" id="quizBox"></div>
+    </div>
+  </div>
+</section>
+
 </main>
 
-<!-- ======== kowl cam (picture-in-picture anchor) ======== -->
-<aside class="pip" id="pip" aria-label="kowl cam" hidden>
-  <div class="pip-screen" id="pipScreen">
-    <img class="pip-img" id="pipImg" src="img/kowl-gm.webp" alt="" width="800" height="800">
-    <button class="pip-poke" id="pipPoke" aria-label="poke kowl"></button>
+<!-- ================= footer ================= -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <img class="foot-kowl" src="img/kowl-leaving.webp" alt="kowl leaving the shrine" width="800" height="800" loading="lazy">
+      <div>
+        <p class="foot-mast"><span class="bl">the Order</span> of kowls</p>
+        <p class="foot-line">every KOL is a kowl. KOLs get paid in secret. kowls get paid in public.</p>
+        <div class="foot-links">
+          <a data-link="x" href="https://x.com/KowlFun" target="_blank" rel="noopener">X @KowlFun</a>
+          <a data-link="telegram" href="#" target="_blank" rel="noopener">telegram</a>
+          <a href="terms.html">terms</a>
+          <a href="privacy.html">privacy</a>
+          <a href="admin.html" rel="nofollow">mods</a>
+          <a href="#shrine">back to the shrine ↑</a>
+        </div>
+      </div>
+    </div>
+    <p class="legal">$KOWL is a memecoin with no intrinsic value, no roadmap and no expectation of financial return. kowl payroll shares creator fees with kowls at its discretion and is moderated; it is not a salary, an investment or a promise, and it is not available in the UK, the EU or Australia. nothing here is financial advice. not even the "not financial advice". kowl, its posts and every handle in the parody bits are made up; any resemblance to your favourite KOL is your problem.</p>
   </div>
-  <div class="pip-bar"><span class="pip-live"><i></i>KOWL CAM</span><span id="pipCh">CH 02</span><button class="pip-min" id="pipMin" aria-label="minimise kowl cam" aria-expanded="true">–</button></div>
-  <div class="pip-bubble" id="pipBubble" aria-live="polite"></div>
-</aside>
+</footer>
 
-<!-- mobile remote -->
-<nav class="tabbar" aria-label="sections">
-  <a href="#live"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zm2 2v8h14V8zm4-6 3 3 3-3 1.4 1.4L13.8 6h-3.6L7.6 3.4z"/></svg><span>live</span></a>
-  <a href="#payroll"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h20v12H2zm2 2v8h16V8zm8 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM5 9h2v2H5zm12 4h2v2h-2z"/></svg><span>payroll</span></a>
-  <a href="#join" class="tab-join"><span class="tab-melt">🫠</span><span>join</span></a>
-  <a href="#memes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zm2 2v9.6l4-4 3 3 4-5 3 3.8V6zm3 3.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg><span>memes</span></a>
-  <button type="button" id="remoteBtn" aria-controls="remote" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM9 12v2h2v-2zm4 0v2h2v-2zm-4 4v2h2v-2zm4 0v2h2v-2z"/></svg><span>channels</span></button>
-</nav>
-
-<div class="modal remote" id="remote" hidden>
-  <div class="modal-card remote-card" role="dialog" aria-modal="true" aria-labelledby="remoteTitle">
-    <h2 id="remoteTitle">channel guide</h2>
-    <div class="remote-grid" id="remoteGrid"></div>
-    <div class="modal-btns"><button class="btn ghost" data-close>close</button></div>
-  </div>
-</div>
-
-<!-- bingo win -->
+<!-- ================= modals ================= -->
 <div class="modal" id="bingoWin" hidden>
-  <div class="modal-card win-card" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-    <img src="img/kowl-melted.webp" alt="kowl melted into a puddle" width="800" height="800">
-    <h2 id="winTitle">you got kowl'd.</h2>
-    <p>five in a row. that's not a timeline, that's a kowl. close the app and make a meme about it.</p>
-    <div class="modal-btns">
-      <button class="btn blue" id="winNew">new card</button>
-      <button class="btn ghost" data-close>keep ticking</button>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <img src="img/kowl-send-it.webp" alt="" width="800" height="800" loading="lazy">
+    <h3 id="winTitle">BINGO.</h3>
+    <p>you found a full line of KOL behaviour. you're officially fluent. now make a meme about it and post it with "paid by $KOWL".</p>
+    <div class="btn-row center">
+      <button class="btn gold" id="winNew" type="button">new card</button>
+      <button class="btn line" data-close type="button">close</button>
     </div>
   </div>
 </div>
 
-<!-- report a meme -->
+<div class="modal oath" id="oathModal" hidden>
+  <div class="oath-card" role="dialog" aria-modal="true" aria-labelledby="oathTitle">
+    <div class="oath-halo" aria-hidden="true"></div>
+    <img id="oathImg" src="img/kowl-send-it.webp" alt="" width="800" height="800" loading="lazy">
+    <p class="eyebrow light" id="oathEyebrow">the swearing-in</p>
+    <h3 id="oathTitle">repeat after kowl.</h3>
+    <ol class="oath-lines" id="oathLines">
+      <li>i will never get paid in secret.</li>
+      <li>every paid post i make starts with "paid by $KOWL".</li>
+      <li>i make memes, not raids.</li>
+      <li>i name no real person.</li>
+      <li>i have no spine, and that's fine.</li>
+    </ol>
+    <p class="oath-note" id="oathNote">your kowl number comes with your first approved meme or accepted bagwork. numbers given before launch are <b>genesis</b>.</p>
+    <button class="btn gold" id="oathBtn" type="button">i swear 🫠</button>
+  </div>
+</div>
+
+<div class="modal profile" id="profileModal" hidden>
+  <div class="profile-card" role="dialog" aria-modal="true" aria-labelledby="profTitle">
+    <button class="lb-x" data-close type="button" aria-label="close">×</button>
+    <p class="eyebrow light">a member of the order</p>
+    <h3 id="profTitle">kowl #????</h3>
+    <canvas id="profCanvas" width="1600" height="1000" aria-label="this member's kowl card"></canvas>
+    <dl class="prof-stats" id="profStats"></dl>
+    <div class="prof-memes" id="profMemes"></div>
+    <div class="btn-row center">
+      <a class="btn gold" href="#initiation" data-close>join the order</a>
+      <button class="btn line light" id="profShare" type="button">share this card ↗</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="reportModal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="repTitle">
-    <h2 id="repTitle" class="rep-h">report this meme</h2>
-    <p class="mut">enough reports hide it until a human looks.</p>
+    <h3 id="repTitle">report this meme</h3>
+    <p>a human will look at it.</p>
     <div class="q-opts" id="repOpts">
-      <button class="q-opt" data-reason="stolen">stolen / not theirs</button>
-      <button class="q-opt" data-reason="real_person">targets a real person</button>
-      <button class="q-opt" data-reason="nsfw">nsfw or gross</button>
-      <button class="q-opt" data-reason="spam">spam / not a $KOWL meme</button>
+      <button class="q-opt" type="button" data-reason="stolen">stolen / not theirs</button>
+      <button class="q-opt" type="button" data-reason="real_person">targets a real person</button>
+      <button class="q-opt" type="button" data-reason="nsfw">nsfw or gross</button>
+      <button class="q-opt" type="button" data-reason="spam">spam / not a $KOWL meme</button>
     </div>
-    <div class="modal-btns"><button class="btn ghost" data-close>cancel</button></div>
+    <div class="btn-row center"><button class="btn line" data-close type="button">cancel</button></div>
   </div>
 </div>
 
-<!-- meme lightbox -->
 <div class="modal lightbox" id="lightbox" hidden>
   <div class="lb-inner" role="dialog" aria-modal="true" aria-label="meme viewer">
-    <button class="lb-x" data-close aria-label="close">✕</button>
-    <button class="lb-nav lb-prev" id="lbPrev" aria-label="previous">‹</button>
-    <figure>
-      <img id="lbImg" alt="">
-      <figcaption id="lbCap"></figcaption>
-    </figure>
-    <button class="lb-nav lb-next" id="lbNext" aria-label="next">›</button>
+    <button class="lb-x" data-close type="button" aria-label="close">×</button>
+    <img id="lbImg" src="" alt="" width="1080" height="1080">
+    <p id="lbCap"></p>
     <div class="lb-bar">
+      <button class="btn line light sm" id="lbPrev" type="button" aria-label="previous meme">←</button>
       <span id="lbCount"></span>
-      <a class="btn blue" id="lbDl" download>download</a>
+      <button class="btn line light sm" id="lbNext" type="button" aria-label="next meme">→</button>
+      <a class="btn gold sm" id="lbDl" href="#" download>download</a>
+      <button class="btn line light sm" id="lbMission" type="button">post it, disclosed</button>
     </div>
   </div>
 </div>
@@ -806,8 +716,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="melt-layer" id="meltLayer" aria-hidden="true"></div>
 
-<script src="app.js?v=3"></script>
-<script src="payroll.js?v=3"></script>
-<script src="tv.js?v=3"></script>
+<script src="app.js?v=4" defer></script>
+<script src="payroll.js?v=4" defer></script>
 </body>
 </html>
