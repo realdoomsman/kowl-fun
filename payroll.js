@@ -262,7 +262,7 @@ function renderShillBoard(rows) {
   const el = $("#shillBoard"), more = $("#boardMore");
   if (!rows.length) {
     el.innerHTML = `<div class="board-empty"><img src="${IMG("shill")}" alt="" width="800" height="800" loading="lazy">
-      <div><b>the door is still bare.</b><p>the first accepted bagwork gets nailed up here, with the kowl's name on it. it could be yours: answer today's call on kowl's phone, post it with "paid by $KOWL", paste the link in the laptop's bagwork box.</p>
+      <div><b>the door is still bare.</b><p>${pr.bagOpen ? "the first accepted bagwork gets nailed up here, with the kowl's name on it. answer today's call on kowl's phone, post it disclosed, paste the link in the laptop's bagwork box." : "bagwork opens at launch. the first disclosed posts get nailed up here, with the kowl's name on them. meanwhile: answer today's call on kowl's phone."}</p>
       <a class="btn ghost sm" href="#call">today's call →</a></div></div>`;
     more.hidden = true;
     return;

@@ -507,7 +507,7 @@ async function bootRoom() {
   const atlasUrl = small || weak ? "room/atlas-2k.webp" : "room/atlas-4k.webp";
   const guard = setTimeout(() => { if (!R.room) startStill("took too long"); }, 25000);
   try {
-    const m = await import("./room.js?v=6");
+    const m = await import("./room.js?v=7");
     if (R.mode === "still") return;
     const room = await m.start({
       canvas: $("#room3d"), mobile, reduced: REDUCED, atlasUrl,
@@ -628,7 +628,7 @@ const ALPHA = [
   ["kowl", "been watching this one for a while"], ["notkowl", "you bought it 4 minutes ago"], ["kowl", "a while"], ["kowl_eth", "my tweet is drafted. thread 1/27"],
   ["alpha kowl 🐋", "2:59. hold"], ["kowl", "posted"], ["alpha kowl 🐋", "KOWL IT'S 2:58"], ["kowlcalls", "he always does this"], ["kowl", "i'm just a holder"],
   ["0xkowl", "chart's -60%"], ["kowl", "zoom out"], ["kowl_eth", "who's still holding"], ["kowl", "*deletes tweet*"], ["system", "kowl changed the group name to \"mental health break\""],
-  ["alpha kowl 🐋", "meanwhile those kowls just say \"paid by $KOWL\" on everything"], ["kowlresearch", "disgusting. honest."], ["kowl", "can i join them"], ["system", "kowl left the group"],
+  ["alpha kowl 🐋", "meanwhile those kowls just say it's paid. on everything."], ["kowlresearch", "disgusting. honest."], ["kowl", "can i join them"], ["system", "kowl left the group"],
 ];
 let chatI = 0, chatTimer = 0;
 function chatPush() {
@@ -1160,7 +1160,7 @@ function openLightbox(i) {
   const m = memes[lbIndex];
   $("#lbImg").src = m.file;
   $("#lbImg").alt = m.caption || "kowl meme";
-  $("#lbCap").textContent = m.caption || "";
+  $("#lbCap").textContent = PRELAUNCH ? coinFree(m.caption || "") : m.caption || "";
   $("#lbCount").textContent = `${lbIndex + 1} / ${memes.length}`;
   const dl = $("#lbDl");
   dl.href = m.file;
@@ -1766,23 +1766,9 @@ function initChart() {
 
 /* ---------------- boot ---------------- */
 document.addEventListener("DOMContentLoaded", () => {
-  initChant();
-  initLinks();
-  initCA();
-  renderRanks();
-  initCard();
-  initPfp();
-  initMission();
-  initMemes();
-  initLightbox();
-  initVaultTabs();
-  initLexicon();
-  initCommandments();
-  initShill();
-  initBingo();
-  initQuiz();
-  initModals();
-  initChart();
-  initPayroll();
-  initRoomUI();
+  // each feature boots on its own: one that throws costs that feature, never the room
+  [initChant, initLinks, initCA, renderRanks, initCard, initPfp, initMission, initMemes, initLightbox, initVaultTabs, initLexicon,
+    initCommandments, initShill, initBingo, initQuiz, initModals, initChart, initPayroll, initRoomUI].forEach((f) => {
+    try { const r = f(); if (r && r.catch) r.catch((e) => console.error(f.name, e)); } catch (e) { console.error(f.name, e); }
+  });
 });
