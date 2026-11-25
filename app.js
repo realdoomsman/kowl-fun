@@ -507,7 +507,7 @@ async function bootRoom() {
   const atlasUrl = small || weak ? "room/atlas-2k.webp" : "room/atlas-4k.webp";
   const guard = setTimeout(() => { if (!R.room) startStill("took too long"); }, 25000);
   try {
-    const m = await import("./room.js?v=5");
+    const m = await import("./room.js?v=6");
     if (R.mode === "still") return;
     const room = await m.start({
       canvas: $("#room3d"), mobile, reduced: REDUCED, atlasUrl,

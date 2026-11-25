@@ -276,11 +276,11 @@ export async function start(opts) {
       s && s.status === "live" ? `pool ........... ${(+s.pool_sol || 0).toFixed(3)} SOL` : "pool ........... opens at launch",
       `fees to kowls .. 100%`,
       "$ who paid you?",
-      "> $KOWL did. it's on-chain.",
+      "> payroll did. in public.",
     ];
     g.font = `500 17px ${MONO}`;
     lines.forEach((l, i) => { g.fillStyle = l.startsWith("$") ? "#ffb347" : l.startsWith(">") ? "#7dff9b" : "#d9e6c4"; g.fillText(l, 16, 58 + i * 30); });
-    if (Math.floor(t * 2) % 2) { g.fillStyle = "#ffb347"; g.fillRect(16 + g.measureText("> $KOWL did. it's on-chain.").width + 6, 58 + 7 * 30 - 15, 10, 18); }
+    if (Math.floor(t * 2) % 2) { g.fillStyle = "#ffb347"; g.fillRect(16 + g.measureText("> payroll did. in public.").width + 6, 58 + 7 * 30 - 15, 10, 18); }
     g.fillStyle = "rgba(255,180,70,.06)"; for (let y = 0; y < H; y += 3) g.fillRect(0, y, W, 1);
     tex.needsUpdate = true;
   }
