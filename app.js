@@ -123,7 +123,7 @@ const CHANT = [
   "the only KOL program where every paid post says it's paid", "now anyone can be a kowl", "not financial advice 🫠",
 ];
 function initChant() {
-  const html = CHANT.map((h) => `<span>${esc(h)}</span>`).join("");
+  const html = CHANT.filter((h) => !(PRELAUNCH && /\$KOWL/.test(h))).map((h) => `<span>${esc(h)}</span>`).join("");
   $("#chantRun").innerHTML = html + html;
 }
 
@@ -407,6 +407,7 @@ function showHint() {
   let seen = false;
   try { seen = !!localStorage.getItem("kowl-visited"); localStorage.setItem("kowl-visited", "1"); } catch { /* private mode */ }
   if (seen && R.pokes) return;
+  if (matchMedia("(pointer: coarse)").matches) { $("#hint span").textContent = "tap things."; $("#hint small").textContent = "drag kowl. fling him. he's fine."; }
   $("#hint").hidden = false;
   requestAnimationFrame(() => $("#hint").classList.add("on"));
   hintT = setTimeout(hideHint, 15000);
@@ -435,16 +436,26 @@ async function startStill(reason) {
   const build = () => {
     const portrait = matchMedia("(orientation: portrait)").matches;
     const rects = R.stills && R.stills[portrait ? "1080x1920" : "1920x1080"];
-    $("#stillBox").classList.toggle("portrait", portrait);
     if (!rects) { $("#hotLayer").innerHTML = ""; return; }
-    const order = Object.keys(rects).filter((k) => OBJ[k]).sort((a, b) => rects[b][2] * rects[b][3] - rects[a][2] * rects[a][3]);
-    $("#hotLayer").innerHTML = order.map((k) => {
-      const [x, y, w, h] = rects[k], o = OBJ[k];
-      return `<button class="hs-btn" type="button" data-key="${k}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" aria-label="${esc(o.label + ": " + o.sub)}"><span class="hot-l"><b>${esc(o.label)}</b><small>${esc(o.sub)}</small></span></button>`;
+    // every target at least 44px (touch guidelines), kept inside the frame; toys stay out of the image map so their
+    // big boxes can't swallow the things that matter. smaller targets go last so they sit on top of bigger ones.
+    const box = $("#stillBox").getBoundingClientRect();
+    const minW = (44 / Math.max(1, box.width)) * 100, minH = (44 / Math.max(1, box.height)) * 100;
+    const hits = Object.keys(rects).filter((k) => OBJ[k] && !OBJ[k].toy).map((k) => {
+      let [x, y, w, h] = rects[k];
+      if (w < minW) { x -= (minW - w) / 2; w = minW; }
+      if (h < minH) { y -= (minH - h) / 2; h = minH; }
+      const x0 = Math.max(0, x), y0 = Math.max(0, y), x1 = Math.min(100, x + w), y1 = Math.min(100, y + h);
+      return { k, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    }).filter((r) => r.w > minW * 0.5 && r.h > minH * 0.5).sort((a, b) => b.w * b.h - a.w * a.h);
+    $("#hotLayer").innerHTML = hits.map(({ k, x, y, w, h }) => {
+      const o = OBJ[k];
+      return `<button class="hs-btn" type="button" data-key="${k}" style="left:${x.toFixed(2)}%;top:${y.toFixed(2)}%;width:${w.toFixed(2)}%;height:${h.toFixed(2)}%" aria-label="${esc(o.label + ": " + o.sub)}"><span class="hot-l"><b>${esc(o.label)}</b><small>${esc(o.sub)}</small></span></button>`;
     }).join("");
   };
   build();
   matchMedia("(orientation: portrait)").addEventListener("change", build);
+  addEventListener("resize", build);
   $("#hotLayer").addEventListener("click", (e) => {
     const b = e.target.closest(".hs-btn");
     if (!b) return;
@@ -1124,7 +1135,8 @@ async function initMemes() {
   try {
     const res = await fetch("memes.json", { cache: "no-cache" });
     if (!res.ok) throw new Error(res.status);
-    memes = (await res.json()).filter((m) => m && m.file);
+    // before launch the vault (free ammo for posting) leaves out the memes whose image shows $KOWL or payroll
+    memes = (await res.json()).filter((m) => m && m.file && !(PRELAUNCH && /^memes\/(21|28|29|30|32|33)_/.test(m.file)));
   } catch {
     grid.innerHTML = '<p class="mut">the canon is loading slower than kowl\'s disclosure. refresh in a sec.</p>';
     return;
@@ -1417,7 +1429,7 @@ function rollShill() {
 }
 function coinName() {
   const raw = ($("#shillCoin").value || "").replace(/[^a-z0-9]/gi, "").toUpperCase().slice(0, 12);
-  return raw || "KOWL";
+  return raw || (PRELAUNCH ? "THEONE" : "KOWL"); // no $KOWL cashtag images before launch
 }
 function wrapWords(ctx, text, maxW) {
   const lines = [];

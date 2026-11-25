@@ -97,10 +97,15 @@ code { font-family: var(--mono); font-size: .86em; background: rgba(245, 163, 15
 .hud > * { pointer-events: auto; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand img { width: 44px; height: 44px; border-radius: 50%; background: var(--peach); box-shadow: 0 0 0 3px #15100c, 0 0 0 5px var(--gold), 0 6px 16px rgba(0, 0, 0, .5); }
-.brand h1 { font: 400 clamp(22px, 2.3vw, 30px)/1 var(--hand); color: #fff8e8; transform: rotate(-2deg); text-shadow: 0 2px 0 #000, 0 0 20px rgba(255, 79, 163, .45); }
+.brand h1 { font: 400 clamp(22px, 2.3vw, 30px)/1 var(--hand); color: #fff8e8; transform: rotate(-2deg); text-shadow: 0 2px 0 #000, 0 0 20px rgba(255, 79, 163, .45); white-space: nowrap; }
 .brand p { margin: 2px 0 0; font: 700 10.5px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--gold-l); }
 .hud-r { display: flex; align-items: center; gap: 8px; }
 .nav-pay { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; background: rgba(10, 6, 18, .62); border: 1px solid rgba(255, 255, 255, .14); font: 700 12px/1 var(--mono); color: #e9e2f5; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.live-chip { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 12px; border-radius: 999px; background: #6441a5; border: 1px solid #9147ff; color: #fff; font: 700 12px/1 var(--mono); text-decoration: none; box-shadow: 0 0 22px rgba(145, 71, 255, .45); transition: transform .2s var(--ease); white-space: nowrap; }
+.live-chip:hover { transform: translateY(-2px) rotate(-1deg); }
+.live-chip i { width: 9px; height: 9px; border-radius: 50%; background: #ff3b5c; box-shadow: 0 0 10px #ff3b5c; animation: ember 1.2s ease-in-out infinite; }
+.live-chip b { font-weight: 400; opacity: .8; }
+@media (max-width: 560px) { .live-chip { padding: 0 11px; gap: 6px; } .live-chip span { font-size: 0; } .live-chip span::after { content: "live"; font-size: 12px; } .live-chip b { display: none; } .brand p { display: none; } }
 .nav-pay b { color: var(--gold-l); }
 .ember { width: 9px; height: 9px; border-radius: 50%; background: #3dff88; box-shadow: 0 0 10px #3dff88; animation: ember 1.6s ease-in-out infinite; }
 .ember.off { background: #ff9d2e; box-shadow: 0 0 10px #ff9d2e; }
