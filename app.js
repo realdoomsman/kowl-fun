@@ -669,7 +669,17 @@ const CALLS = [
   ["kowl did.", 28], ["now hiring: kowls.", 29], ["the side wallet's side wallet.", 30], ["receipts.", 31], ["kowl tries the callout template.", 32],
   ["kowl's disclosure.", 33], ["wanted: kowl.", 9], ["KOL bingo.", 8], ["define: kowl'd.", 11], ["kowls want you.", 20],
 ];
-const CAPTIONS = [
+// before launch nobody posts the $KOWL cashtag (copycat tickers). captions switch to the "paid by $KOWL" form once CA is set.
+const PRELAUNCH = !/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(CA);
+const coinFree = (s) => s.replace(/\s*\(?paid by \$KOWL\)?[.,:]?/gi, "").replace(/\s*\$KOWL\b/g, "").replace(/[.,]?\s*(make memes, )?get paid in public\.?/gi, ".").replace(/\s*100% of creator fees\.?/gi, "").replace(/\.\./g, ".").replace(/[ \t]+\n/g, "\n").trim();
+// memes whose image shows $KOWL or payroll (0-based index into memes.json); swapped for coin-free ones before launch
+const COIN_IMG = new Set([20, 27, 28, 29, 31, 32]);
+const SAFE_IMG = [12, 5, 15, 19, 22, 6, 10, 13];
+const CAPTIONS = PRELAUNCH ? [
+  (p, c) => `${coinFree(c)}\n\nevery KOL is a kowl 🫠`,
+  (p, c) => `today's call: ${p}\n\n${coinFree(c)}`,
+  (p, c) => `${coinFree(c)}\n\nfollow @KowlFun 🫠`,
+] : [
   (p, c) => `paid by $KOWL 🫠\n\n${c}`,
   (p, c) => `paid by $KOWL. today's call: ${p}\n\n${c}`,
   (p, c) => `paid by $KOWL (every kowl post says so)\n\n${c}`,
@@ -684,7 +694,8 @@ const WARMUP = ["warm-up: who paid you?", 28];
 function renderMission() {
   if (!memes.length) return;
   const { n, next } = callNow();
-  const [prompt, mi] = n < 0 ? WARMUP : CALLS[n % CALLS.length];
+  const [prompt, mi0] = n < 0 ? WARMUP : CALLS[n % CALLS.length];
+  const mi = PRELAUNCH && COIN_IMG.has(mi0 % memes.length) ? SAFE_IMG[Math.max(n, 0) % SAFE_IMG.length] : mi0;
   mission.n = n; mission.next = next; mission.prompt = prompt.replace(/^warm-up: /, "");
   mission.meme = memes[mi % memes.length];
   $("#callPrompt").textContent = prompt;
@@ -713,14 +724,20 @@ function tickCall() {
   if (left <= 0 && memes.length) { renderMission(); toast("kowl just dropped the 3:00pm call. 🫠"); }
 }
 function initMission() {
+  if (PRELAUNCH) {
+    // pre-launch: coin-free posting, no Paid Partnership (nothing is paid yet), bagwork opens at launch
+    $(".mission-stamp").innerHTML = "every KOL<br>is a kowl";
+    $('label[for="missionText"] small').textContent = "(coin-free until launch: no ticker, no CA)";
+    $(".mission-steps").innerHTML = '<li><b>download</b> the meme (X\'s post button can\'t attach it for you).</li><li><b>post</b> with the caption and attach the image.</li><li><b>after launch</b> the caption switches to "paid by $KOWL", and bagwork pays +8 a post.</li>';
+  }
   $("#missionText").addEventListener("input", syncIntent);
   $("#missionReroll").addEventListener("click", () => { mission.cap++; renderCaption(); });
   $("#missionCopy").addEventListener("click", async (e) => {
     const ok = await copy($("#missionText").value);
-    toast(ok ? "caption copied. turn on Paid Partnership when you post." : "copy failed. select it by hand.");
+    toast(ok ? (PRELAUNCH ? "caption copied. go post it." : "caption copied. turn on Paid Partnership when you post.") : "copy failed. select it by hand.");
     if (ok) melt(...evPoint(e), 4);
   });
-  $("#missionPost").addEventListener("click", () => toast("attach the meme, turn on Paid Partnership, then paste the link in the sanctum."));
+  $("#missionPost").addEventListener("click", () => toast(PRELAUNCH ? "attach the meme you downloaded, then post." : "attach the meme, turn on Paid Partnership, then paste the link in the sanctum."));
   $("#missionDl").addEventListener("click", () => toast("downloaded. now post it."));
   tickCall();
   setInterval(tickCall, 1000);
@@ -773,7 +790,8 @@ function initLightbox() {
   $("#lbNext").addEventListener("click", () => openLightbox(lbIndex + 1));
   $("#lbMission").addEventListener("click", () => {
     const m = memes[lbIndex];
-    window.open(intentFor(`paid by $KOWL 🫠\n\n${(m.caption || "").replace(/[’]/g, "'")}`), "_blank", "noopener");
+    const base = (m.caption || "").replace(/[’]/g, "'");
+    window.open(intentFor(PRELAUNCH ? `${coinFree(base)}\n\nevery KOL is a kowl 🫠` : `paid by $KOWL 🫠\n\n${base}`), "_blank", "noopener");
     toast("attach the meme you downloaded and turn on Paid Partnership.");
   });
   $("#lightbox").addEventListener("click", (e) => { if (e.target.classList.contains("lb-inner")) closeModal($("#lightbox")); });
