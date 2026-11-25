@@ -8,7 +8,7 @@ const LINKS = {
   pump: "#",                         // https://pump.fun/coin/<CA>
 };
 const API_BASE = "https://api.kowl.fun"; // kowl payroll API (Railway). "" = payroll shows "opens at launch"
-const GOOGLE_CLIENT_ID = "";         // Google Identity Services web client id ("" = "sign-in opens at launch"). the site's origin must be an authorised JS origin.
+const GOOGLE_CLIENT_ID = "108080030634-0gj8lmso0csho8ok0psbeft7ehhuf3n8.apps.googleusercontent.com"; // Google Identity Services web client (GCP project beaming-mode-482220-r6). authorised origins: kowl.fun, www.kowl.fun, localhost:8787/8790
 // live chart: the "chart" section stays hidden while this is "". GeckoTerminal embed by POOL address:
 //   https://www.geckoterminal.com/solana/pools/<POOL>?embed=1&info=0&swaps=0&light_chart=1&chart_type=market_cap&resolution=15m
 // careful: a pump.fun coin's pool CHANGES when it graduates from the bonding curve to PumpSwap. update this at graduation.

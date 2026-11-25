@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>privacy · kowl</title>
+<link rel="icon" href="favicon.ico">
+<style>
+  body { margin: 0; background: #FFF5EF; color: #0F1419; font: 16px/1.6 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1 { font-size: 40px; margin: 0 0 4px; } h2 { margin-top: 32px; font-size: 20px; }
+  a { color: #1D9BF0; } .muted { color: #536471; }
+</style>
+</head>
+<body>
+<main>
+<p><a href="/">← kowl.fun</a></p>
+<h1>privacy</h1>
+<p class="muted">last updated: november 25, 2026</p>
+
+<p>kowl.fun is the site for $KOWL, a memecoin, and for kowl payroll, which pays the creator fees of $KOWL to people who make $KOWL memes and do disclosed bagwork. This page says what we collect and why.</p>
+
+<h2>what we collect</h2>
+<ul>
+  <li><b>google sign-in:</b> when you sign in with Google we receive your Google account id, email address, name and profile picture from Google. We keep the account id and email to run your kowl account. Your email is never shown publicly. Your public name is the display name you choose (default "kowl-xxxx").</li>
+  <li><b>things you submit:</b> memes you upload, their titles, X post links you submit as bagwork, the X handle you link, and Solana addresses you withdraw to.</li>
+  <li><b>payroll records:</b> points, balances, payday credits and withdrawals. Withdrawals are Solana transactions and are public on the blockchain. The site lists recent ones with your display name.</li>
+  <li><b>engagement counts:</b> views, shares and downloads of memes on this site are counted once per visitor per day. For visitors who aren't signed in we store a salted hash of the IP address and browser user agent, not the IP itself.</li>
+  <li><b>security logs:</b> our server keeps short-lived request logs and rate-limit counters to stop abuse.</li>
+</ul>
+
+<h2>what we don't do</h2>
+<ul>
+  <li>we don't sell or rent your data.</li>
+  <li>we don't use advertising trackers.</li>
+  <li>we never ask for your seed phrase or private keys, and we never read your X account.</li>
+</ul>
+
+<h2>who processes it</h2>
+<p>The site is hosted on GitHub Pages and the payroll server on Railway. Sign-in is provided by Google. Solana RPC providers process withdrawal transactions. Each of these providers handles data under its own privacy policy.</p>
+
+<h2>keeping and deleting</h2>
+<p>We keep account data while your account exists. To delete your account, email us from the address you signed in with. Payroll ledger entries and on-chain transactions can't be erased from the blockchain, but we remove your name and email from our records.</p>
+
+<h2>contact</h2>
+<p><a href="mailto:realdoomsalt@gmail.com">realdoomsalt@gmail.com</a></p>
+</main>
+</body>
+</html>
