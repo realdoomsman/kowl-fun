@@ -1,0 +1,649 @@
+/* =====================================================================
+   kowl payroll v3 client: google sign-in, kowl balance, memes, bagwork,
+   withdrawals and the public boards. the constants (API_BASE,
+   GOOGLE_CLIENT_ID) live at the top of app.js; helpers ($, esc, toast,
+   melt, commas, fmt, countTo, IMG) come from app.js too.
+   ===================================================================== */
+const API = API_BASE.trim().replace(/\/+$/, "");
+const GCID = GOOGLE_CLIENT_ID.trim();
+const SESSION_KEY = "kowl-session";
+const pr = {
+  state: "offline", stats: null, token: null, me: null, range: "24h", sort: "new", cursor: null, memes: [],
+  nextAt: 0, busy: false, reportId: null, meTab: "memes", wdKey: null, gsi: false, seen: new Set(),
+};
+try { pr.token = localStorage.getItem(SESSION_KEY); } catch { /* private mode */ }
+
+class ApiError extends Error {}
+async function api(path, body, method) {
+  if (!API) throw new ApiError("payroll opens at launch.");
+  const ctl = new AbortController();
+  const isForm = body instanceof FormData;
+  const timer = setTimeout(() => ctl.abort(), isForm ? 60000 : 10000);
+  const headers = {};
+  if (body && !isForm) headers["Content-Type"] = "application/json";
+  if (pr.token) headers.Authorization = "Bearer " + pr.token;
+  let res;
+  try {
+    res = await fetch(API + path, {
+      method: method || (body ? "POST" : "GET"), headers,
+      body: body ? (isForm ? body : JSON.stringify(body)) : undefined, signal: ctl.signal,
+    });
+  } catch {
+    throw new ApiError("can't reach payroll right now. try again in a sec.");
+  } finally {
+    clearTimeout(timer);
+  }
+  let data = null;
+  try { data = await res.json(); } catch { /* not json */ }
+  if (res.status === 401 && pr.token) { dropSession(); throw new ApiError("your session ran out. sign in again."); }
+  if (!res.ok || (data && data.ok === false)) throw new ApiError((data && data.error) || `payroll said ${res.status}. try again in a sec.`);
+  return data;
+}
+
+/* ---- small helpers ---- */
+const num = (v) => (Number.isFinite(+v) ? +v : 0);
+function sol(v) {
+  const n = num(v);
+  if (n === 0) return "0";
+  if (Math.abs(n) < 0.01) return n.toFixed(4);
+  if (Math.abs(n) < 1000) return n.toFixed(3).replace(/0$/, "");
+  return commas(n);
+}
+const shortAddr = (w) => (w && w.length > 10 ? `${w.slice(0, 4)}…${w.slice(-4)}` : w || "");
+const toMs = (t) => (typeof t === "number" ? (t < 1e12 ? t * 1000 : t) : Date.parse(t));
+function ago(t) {
+  const s = Math.max(0, (Date.now() - toMs(t)) / 1000);
+  if (!Number.isFinite(s)) return "";
+  if (s < 60) return "now";
+  if (s < 3600) return Math.floor(s / 60) + "m ago";
+  if (s < 86400) return Math.floor(s / 3600) + "h ago";
+  return Math.floor(s / 86400) + "d ago";
+}
+function countdown(ms) {
+  if (ms <= 0) return "now";
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+  return (h ? `${h}:${String(m).padStart(2, "0")}` : String(m)) + `:${String(x).padStart(2, "0")}`;
+}
+const pill = (s, label) => `<span class="pill ${esc(s || "")}">${esc(label || s || "")}</span>`;
+const SOL_ADDR = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const SOL_SIG = /^[1-9A-HJ-NP-Za-km-z]{43,100}$/;
+const X_STATUS = /^https?:\/\/(www\.|mobile\.)?(x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/status(es)?\/\d+/i;
+const xHandle = (h) => String(h || "").replace(/^@/, "").replace(/[^A-Za-z0-9_]/g, "").slice(0, 15);
+// api media is "/media/<id>.<ext>" (or absolute); only http(s) gets through
+const mediaUrl = (u) => (!u ? "" : /^https?:\/\//i.test(u) ? u : /^\//.test(u) ? API + u : "");
+const safeImg = (u) => (/^https:\/\//i.test(u || "") ? u : "");
+function avatar(a, name, cls = "av-s") {
+  const u = safeImg(a);
+  return u
+    ? `<img class="${cls}" src="${esc(u)}" alt="" referrerpolicy="no-referrer" loading="lazy">`
+    : `<span class="${cls} av-letter">${esc((String(name || "k").replace(/[^A-Za-z0-9]/g, "")[0] || "k").toLowerCase())}</span>`;
+}
+const xLink = (h) => (xHandle(h) ? ` <a class="xh" href="https://x.com/${xHandle(h)}" target="_blank" rel="noopener">@${esc(xHandle(h))}</a>` : "");
+const emptyHTML = (img, title, text) =>
+  `<div class="empty"><img src="${IMG(img)}" alt="" width="800" height="800" loading="lazy"><b>${esc(title)}</b>${esc(text)}</div>`;
+const failHTML = '<p class="empty"><b>couldn\'t load this</b>payroll is being shy. it retries every minute.</p>';
+function setMsg(el, text, kind) { el.textContent = text || ""; el.className = "form-msg" + (kind ? " " + kind : ""); }
+const isOpen = () => pr.state !== "offline";
+const isLive = () => pr.state === "live";
+const signInReady = () => isOpen() && !!GCID;
+
+/* ---- stats ---- */
+function applyStats(s) {
+  pr.stats = s;
+  pr.state = s && s.status === "live" ? "live" : s ? "waiting" : "offline";
+  const live = isLive(), open = isOpen();
+  const box = $("#prStatus");
+  box.dataset.state = pr.state;
+  $(".live-dot", box).classList.toggle("off", !live);
+  $("#payStrip .live-dot").classList.toggle("off", !live);
+  const every = num(s && s.payday_minutes) || 15, windowH = num(s && s.points_window_hours) || 24;
+  if (live) {
+    $("#prStatusTitle").textContent = "payroll is live";
+    $("#prStatusSub").textContent = `payday every ${every} minutes: the fees that came in are split by the points kowls earned in the last ${windowH}h. withdraw anytime.`;
+  } else if (open) {
+    $("#prStatusTitle").textContent = "payroll opens at launch";
+    $("#prStatusSub").textContent = "sign-in, memes and points already work. paydays and withdrawals start when $KOWL is live.";
+  } else {
+    $("#prStatusTitle").textContent = "payroll opens at launch";
+    $("#prStatusSub").textContent = "make your memes now. sign-in, points and payday open when $KOWL is live.";
+  }
+  countTo($("#stPool"), live ? num(s.pool_sol) : null, sol);
+  countTo($("#stPaid"), live ? num(s.paid_total_sol) : null, sol);
+  countTo($("#stKowls"), open ? num(s.kowls) : null, commas);
+  $("#stWithdrawn").textContent = live ? `${sol(s.withdrawn_total_sol)} SOL withdrawn on-chain` : "withdrawn on-chain";
+  $("#stMemes").textContent = open ? `${commas(num(s.memes_round))} memes in play` : "meme makers";
+  $("#stEpoch").textContent = live ? `every ${every} minutes` : `every ${every} min, from launch`;
+  const roll = live ? num(s.rollover_sol) : 0;
+  const rEl = $("#stRollover");
+  rEl.textContent = roll > 0 ? `rolling over: ${sol(roll)} SOL` : "since the last payday";
+  rEl.classList.toggle("roll", roll > 0);
+  const fw = s && SOL_ADDR.test(s.fee_wallet || "") ? s.fee_wallet : "";
+  $("#feeWallet").innerHTML = fw
+    ? `<a href="https://solscan.io/account/${fw}" target="_blank" rel="noopener"><code>${shortAddr(fw)}</code> on solscan ↗</a>`
+    : "address published at launch";
+  pr.nextAt = live && s.next_payday ? toMs(s.next_payday) : 0;
+  tickPayday();
+  $("#appCard").dataset.state = signInReady() ? "open" : "offline";
+  renderSignin();
+  renderAccount();
+}
+function tickPayday() {
+  const left = pr.nextAt ? pr.nextAt - Date.now() : 0;
+  $("#stNext").textContent = isLive() && pr.nextAt ? countdown(left) : "soon";
+  $("#payStripText").textContent = isLive()
+    ? `payroll live · ${sol(pr.stats.pool_sol)} SOL in the pool · payday ${pr.nextAt ? "in " + countdown(left) : "soon"}`
+    : "kowl payroll opens at launch";
+}
+async function loadStats() {
+  const was = pr.state;
+  try { applyStats(await api("/api/stats")); } catch { applyStats(null); }
+  loadBoards();
+  if (was !== pr.state || !pr.memes.length) loadGallery(true);
+  if (signInReady()) initGoogle();
+}
+
+/* ---- public boards ---- */
+async function loadBoards() {
+  const lead = $("#leaders"), cr = $("#credits"), wd = $("#withdrawals");
+  if (!isOpen()) {
+    lead.innerHTML = emptyHTML("sus", "no kowls on the board yet", "the first payday lands within 15 minutes of launch. your memes could be on it.");
+    cr.innerHTML = emptyHTML("rich", "no paydays yet", "every payday credit shows up here: who, how many points, how much SOL.");
+    wd.innerHTML = emptyHTML("shill", "no withdrawals yet", "every withdrawal shows up here with its solscan receipt. no secrets.");
+    return;
+  }
+  const [l, c, w] = await Promise.allSettled([api(`/api/leaderboard?range=${pr.range}`), api("/api/payroll?limit=50"), api("/api/withdrawals?limit=50")]);
+  renderLeaders(l.status === "fulfilled" ? l.value : null);
+  renderCredits(c.status === "fulfilled" ? c.value : null);
+  renderWithdrawals(w.status === "fulfilled" ? w.value : null);
+}
+function renderLeaders(rows) {
+  const el = $("#leaders");
+  if (!Array.isArray(rows)) { el.innerHTML = failHTML; return; }
+  if (!rows.length) { el.innerHTML = emptyHTML("sus", "nobody yet in this range", "upload a meme. +10 points the moment a human approves it."); return; }
+  el.innerHTML = rows.map((r, i) => `<div class="row"><span class="rk">${i + 1}</span>
+      <div class="who">${avatar(r.avatar, r.name)}<div><b>${esc(r.name || "kowl")}${xLink(r.x_handle)}</b><span>${commas(num(r.points))} points · ${commas(num(r.memes))} meme${num(r.memes) === 1 ? "" : "s"}</span></div></div>
+      <div class="amt">${sol(r.earned_sol)}<small>SOL earned</small></div></div>`).join("");
+}
+function renderCredits(rows) {
+  const el = $("#credits");
+  if (!Array.isArray(rows)) { el.innerHTML = failHTML; return; }
+  if (!rows.length) { el.innerHTML = emptyHTML("rich", "no paydays yet", "the first payday hasn't happened. every credit will be listed here."); return; }
+  el.innerHTML = rows.map((r) => `<div class="row"><span class="rk">+</span>
+      <div class="who">${avatar(r.avatar, r.name)}<div><b>${esc(r.name || "kowl")}${xLink(r.x_handle)}</b><span>${r.payday != null ? `payday #${esc(r.payday)} · ` : ""}${commas(num(r.points))} points · ${esc(ago(r.ts))}</span></div></div>
+      <div class="amt">+${sol(r.sol)}<small>SOL</small></div></div>`).join("");
+}
+function renderWithdrawals(rows) {
+  const el = $("#withdrawals");
+  if (!Array.isArray(rows)) { el.innerHTML = failHTML; return; }
+  if (!rows.length) { el.innerHTML = emptyHTML("shill", "no withdrawals yet", "every withdrawal will be listed here with its solscan receipt."); return; }
+  el.innerHTML = rows.map((r) => {
+    const sig = SOL_SIG.test(r.sig || "") ? r.sig : "";
+    return `<div class="row"><span class="rk">◎</span>
+      <div class="who">${avatar(r.avatar, r.name)}<div><b>${esc(r.name || "kowl")}</b><span>${esc(ago(r.ts))}</span></div></div>
+      <div class="amt">${sol(r.sol)} SOL${sig ? `<a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">receipt ↗</a>` : ""}</div></div>`;
+  }).join("");
+}
+function initBoards() {
+  const segs = $$("[data-board]");
+  segs.forEach((b) => b.addEventListener("click", () => {
+    segs.forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); });
+    $$("[data-pane]").forEach((p) => { p.hidden = p.dataset.pane !== b.dataset.board; });
+  }));
+  const ranges = $$("#lbRange button");
+  ranges.forEach((b) => b.addEventListener("click", async () => {
+    ranges.forEach((x) => x.classList.toggle("on", x === b));
+    pr.range = b.dataset.range;
+    if (!isOpen()) return;
+    try { renderLeaders(await api(`/api/leaderboard?range=${pr.range}`)); } catch { renderLeaders(null); }
+  }));
+}
+
+/* ---- google sign-in (Google Identity Services) ---- */
+function initGoogle() {
+  if (pr.gsi) return;
+  pr.gsi = true;
+  const ready = () => {
+    const id = window.google && window.google.accounts && window.google.accounts.id;
+    if (!id) { googleFailed(); return; }
+    id.initialize({ client_id: GCID, callback: onCredential, auto_select: false, cancel_on_tap_outside: true, itp_support: true });
+    id.renderButton($("#gsiBtn"), { type: "standard", theme: "filled_black", size: "large", shape: "pill", text: "signin_with", logo_alignment: "left", width: 260 });
+    if (!pr.token) id.prompt(); // One Tap, if google decides to show it
+  };
+  if (window.google && window.google.accounts && window.google.accounts.id) { ready(); return; }
+  const s = document.createElement("script");
+  s.src = "https://accounts.google.com/gsi/client";
+  s.async = true;
+  s.onload = ready;
+  s.onerror = googleFailed;
+  document.head.appendChild(s);
+}
+function googleFailed() {
+  pr.gsi = false;
+  $("#signinSub").textContent = "google sign-in didn't load (an ad blocker?). allow accounts.google.com and refresh.";
+}
+async function onCredential(resp) {
+  try {
+    const r = await api("/api/auth/google", { credential: resp && resp.credential });
+    pr.token = r.token;
+    try { localStorage.setItem(SESSION_KEY, r.token); } catch { /* private mode */ }
+    pr.me = { account: r.account, memes: [], bagwork: [], ledger: [], withdrawals: [] };
+    renderSignin(); renderAccount();
+    toast("you're a kowl now 🫠");
+    melt(innerWidth / 2, innerHeight / 2, 10);
+    loadMe();
+  } catch (e) {
+    toast(e.message);
+  }
+}
+function dropSession() {
+  pr.token = null; pr.me = null;
+  try { localStorage.removeItem(SESSION_KEY); } catch { /* private mode */ }
+  renderSignin(); renderAccount();
+}
+async function signOut() {
+  try { await api("/api/auth/logout", {}); } catch { /* the session dies locally anyway */ }
+  dropSession();
+  if (window.google && window.google.accounts && window.google.accounts.id) window.google.accounts.id.disableAutoSelect();
+  toast("signed out. kowl will miss you (he won't remember).");
+}
+function renderSignin() {
+  const signed = !!(pr.token && pr.me);
+  $(".join-grid").classList.toggle("signed", signed);
+  $("#signinBox").hidden = signed;
+  $("#actions").hidden = !signed;
+  if (signed) return;
+  if (!signInReady()) {
+    $("#signinTitle").textContent = "sign-in opens at launch";
+    $("#signinSub").textContent = "make your memes now. the moment payroll opens you can sign in with google and upload them.";
+  } else {
+    $("#signinTitle").textContent = "sign in to become a kowl";
+    $("#signinSub").textContent = "one tap with google. no wallet needed until you withdraw. your email is never shown anywhere.";
+  }
+  $("#gsiBtn").hidden = !signInReady();
+}
+
+/* ---- my kowl ---- */
+async function loadMe() {
+  if (!pr.token || !isOpen()) { renderAccount(); return; }
+  try {
+    pr.me = await api("/api/me");
+  } catch (e) {
+    if (pr.token) toast(e.message);
+  }
+  renderSignin();
+  renderAccount();
+}
+const MEME_ST = { pending: "in review", approved: "live", rejected: "rejected", hidden: "hidden" };
+const WD_ST = { review: "in review", pending: "pending", sent: "sent", confirmed: "confirmed", failed: "failed · refunded", rejected: "rejected · refunded" };
+function renderAccount() {
+  const me = pr.token ? pr.me : null, a = me && me.account;
+  $("#meAvatar").src = (a && safeImg(a.avatar)) || "img/kowl-head-256.png";
+  $("#meName").textContent = a ? a.name || "kowl" : "not signed in";
+  $("#meSub").textContent = a
+    ? a.banned ? "this account is frozen. ask @kowlcoin." : `kowl since ${new Date(toMs(a.joined_at)).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}${a.x_status === "verified" && a.x_handle ? ` · @${xHandle(a.x_handle)}` : ""}`
+    : "sign in to see your kowl balance";
+  $("#nameEdit").hidden = !a;
+  $("#signOut").hidden = !a;
+  if (!a) $("#nameForm").hidden = true;
+  countTo($("#meBalance"), a ? num(a.balance_sol) : 0, sol);
+  $("#meEarned").textContent = a ? sol(a.earned_total_sol) : "0";
+  $("#meWithdrawn").textContent = a ? sol(a.withdrawn_total_sol) : "0";
+  $("#mePoints").textContent = a ? commas(num(a.points_round)) : "0";
+  // withdraw
+  const canWd = !!a && isLive() && !a.banned;
+  ["#wdAddr", "#wdAmt", "#wdMax"].forEach((s) => { $(s).disabled = !canWd || pr.busy; });
+  $("#wdBtn").disabled = !canWd || pr.busy;
+  $("#wdBtn").textContent = !a ? "sign in to withdraw" : !isLive() ? "withdrawals open after launch" : "withdraw";
+  renderX(a);
+  renderMeList();
+}
+function renderX(a) {
+  if (!a) return;
+  const st = a.x_status || "none", state = $("#xState"), form = $("#xForm");
+  if (st === "verified") {
+    state.innerHTML = `<p class="x-ok">✓ linked: <b>@${esc(xHandle(a.x_handle))}</b>. your bagwork can be credited.</p>`;
+    form.hidden = true;
+  } else if (st === "pending" && a.x_code) {
+    state.innerHTML = `<p>put this in your X bio, then wait for a human to check it (usually within a day):</p>
+      <div class="xcode"><code>${esc(a.x_code)}</code><button class="mini-btn" type="button" id="xCopy">copy</button></div>
+      <p class="mut small">checking @${esc(xHandle(a.x_handle))}. wrong handle? enter it again below.</p>`;
+    form.hidden = false;
+    $("#xCopy").onclick = async () => { const ok = await copy(a.x_code); toast(ok ? "code copied. paste it in your X bio." : "copy failed. type it."); };
+  } else {
+    state.innerHTML = "<p>link your X so a human can credit your bagwork. you'll get a code to put in your bio.</p>";
+    form.hidden = false;
+  }
+  const ok = st === "verified" && !a.banned;
+  ["#bagUrl", "#bagNote", "#bagBtn"].forEach((s) => { $(s).disabled = !ok; });
+  $("#bagForm").classList.toggle("locked", !ok);
+  if (!ok && !$("#bagMsg").textContent) setMsg($("#bagMsg"), "link your X first (above). bagwork only counts from your own linked account.", "info");
+  if (ok && $("#bagMsg").classList.contains("info") && /link your X first/.test($("#bagMsg").textContent)) setMsg($("#bagMsg"), "");
+}
+function renderMeList() {
+  const me = pr.token ? pr.me : null, el = $("#meList");
+  if (!me || !me.account) { el.innerHTML = '<p class="empty">your memes, bagwork, withdrawals and ledger show up here.</p>'; return; }
+  const list = (k) => (Array.isArray(me[k]) ? me[k] : []);
+  const tab = pr.meTab;
+  let html = "";
+  if (tab === "memes") {
+    html = list("memes").map((m) => {
+      const u = mediaUrl(m.url);
+      const thumb = u ? (m.kind === "video" ? `<video src="${esc(u)}" muted preload="metadata"></video>` : `<img src="${esc(u)}" alt="" loading="lazy">`) : '<span class="mthumb-ph">🫠</span>';
+      const e = m.engagement || {};
+      const meta = m.status === "rejected" ? esc(m.reason || "rejected") : m.status === "pending" ? "a human checks it before it goes public" : m.status === "hidden" ? esc(m.reason || "hidden by a mod") : `👁 ${commas(num(e.views))} · ↗ ${commas(num(e.shares))} · ⬇ ${commas(num(e.downloads))}`;
+      return `<div class="me-meme"><div class="mthumb">${thumb}</div>
+        <div><b>${esc(m.title || "untitled")}</b>${pill(m.status, MEME_ST[m.status])}${m.best ? pill("best", "⭐ best") : ""}<span class="meta">${meta}</span></div>
+        <div class="amt">${num(m.points) ? `+${commas(num(m.points))}<small>pts</small>` : "–"}</div></div>`;
+    }).join("") || '<p class="empty">no memes yet. upload one: +10 points when it\'s approved.</p>';
+  } else if (tab === "bagwork") {
+    html = list("bagwork").map((b) => {
+      const link = X_STATUS.test(b.url || "") ? b.url : "";
+      return `<div class="me-meme"><div class="mthumb"><span class="mthumb-ph">𝕏</span></div>
+        <div>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">post ↗</a>` : "post"}${pill(b.status, b.status === "pending" ? "in review" : b.status)}
+        <span class="meta">${b.status === "rejected" ? esc(b.reason || "rejected") : esc(b.note || ago(b.created_at))}</span></div>
+        <div class="amt">${b.status === "approved" ? `+${commas(num(b.points))}<small>pts</small>` : "–"}</div></div>`;
+    }).join("") || '<p class="empty">no bagwork yet. link your X, post with "paid by $KOWL" + the Paid Partnership label, submit the link.</p>';
+  } else if (tab === "withdrawals") {
+    html = list("withdrawals").map((w) => {
+      const sig = SOL_SIG.test(w.sig || "") ? w.sig : "";
+      return `<div class="me-meme"><div class="mthumb"><span class="mthumb-ph">◎</span></div>
+        <div><b>${sol(w.amount_sol != null ? w.amount_sol : w.sol)} SOL</b>${pill(w.status, WD_ST[w.status])}
+        <span class="meta">to ${esc(shortAddr(w.address))} · ${esc(ago(w.created_at || w.ts))}${w.reason ? " · " + esc(w.reason) : ""}</span></div>
+        <div class="amt">${sig ? `<a href="https://solscan.io/tx/${sig}" target="_blank" rel="noopener">solscan ↗</a>` : "–"}</div></div>`;
+    }).join("") || '<p class="empty">no withdrawals yet. from 0.01 SOL, anytime after launch.</p>';
+  } else {
+    const KIND = { payday: "payday", withdrawal: "withdrawal", adjust: "adjustment" };
+    html = list("ledger").map((l) => `<div class="ledger-row"><span>${esc(KIND[l.kind] || l.kind)}${l.ref ? ` <i>${esc(l.ref)}</i>` : ""}<small>${esc(ago(l.ts))}</small></span>
+        <b class="${num(l.sol) < 0 ? "neg" : "pos"}">${num(l.sol) < 0 ? "" : "+"}${sol(l.sol)}</b></div>`).join("")
+      || '<p class="empty">nothing yet. every payday credit and withdrawal lands here.</p>';
+  }
+  el.innerHTML = html;
+}
+function initMe() {
+  const tabs = $$("#meTabs button");
+  tabs.forEach((b) => b.addEventListener("click", () => {
+    tabs.forEach((x) => x.classList.toggle("on", x === b));
+    pr.meTab = b.dataset.me;
+    renderMeList();
+  }));
+  $("#nameEdit").addEventListener("click", () => {
+    const f = $("#nameForm");
+    f.hidden = !f.hidden;
+    if (!f.hidden) { $("#nameInput").value = (pr.me && pr.me.account && pr.me.account.name) || ""; $("#nameInput").focus(); }
+  });
+  $("#nameForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = $("#nameInput").value.trim();
+    if (!name) { toast("a name needs at least one letter. even kowl has one."); return; }
+    try {
+      const r = await api("/api/me/profile", { name });
+      if (r && r.account && pr.me) pr.me.account = r.account;
+      $("#nameForm").hidden = true;
+      renderAccount();
+      toast("name saved. put 🫠 in it.");
+    } catch (err) { toast(err.message); }
+  });
+  $("#signOut").addEventListener("click", signOut);
+  // withdraw
+  const wdChanged = () => { pr.wdKey = null; };
+  $("#wdAddr").addEventListener("input", wdChanged);
+  $("#wdAmt").addEventListener("input", wdChanged);
+  $("#wdMax").addEventListener("click", () => {
+    const b = pr.me && pr.me.account ? num(pr.me.account.balance_sol) : 0;
+    $("#wdAmt").value = b ? String(Math.floor(b * 1e9) / 1e9) : "";
+    wdChanged();
+  });
+  $("#wdForm").addEventListener("submit", withdraw);
+  // X link
+  $("#xForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const h = xHandle($("#xHandle").value), msg = $("#xMsg");
+    if (!h) { setMsg(msg, "type your X handle.", "err"); return; }
+    try {
+      const r = await api("/api/me/x", { handle: h });
+      if (pr.me && pr.me.account) Object.assign(pr.me.account, { x_handle: h, x_status: "pending", x_code: r.code });
+      setMsg(msg, "");
+      renderAccount();
+    } catch (err) { setMsg(msg, err.message, "err"); }
+  });
+  // bagwork
+  $("#bagForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const url = $("#bagUrl").value.trim(), note = $("#bagNote").value.trim(), msg = $("#bagMsg");
+    if (!X_STATUS.test(url)) { setMsg(msg, "that's not a link to an X post. it looks like x.com/you/status/123…", "err"); return; }
+    $("#bagBtn").disabled = true;
+    try {
+      await api("/api/bagwork", { url, note });
+      setMsg(msg, "submitted. a human checks it: starts with \"paid by $KOWL\", Paid Partnership label on, your account. then up to 20 points.", "ok");
+      $("#bagUrl").value = ""; $("#bagNote").value = "";
+      pr.meTab = "bagwork";
+      $$("#meTabs button").forEach((x) => x.classList.toggle("on", x.dataset.me === "bagwork"));
+      loadMe();
+    } catch (err) { setMsg(msg, err.message, "err"); }
+    finally { $("#bagBtn").disabled = false; }
+  });
+}
+function newKey() {
+  const b = new Uint8Array(18);
+  crypto.getRandomValues(b);
+  return Array.from(b, (x) => x.toString(36).padStart(2, "0")).join("").slice(0, 32);
+}
+async function withdraw(e) {
+  e.preventDefault();
+  const msg = $("#wdMsg"), a = pr.me && pr.me.account;
+  const address = $("#wdAddr").value.trim(), amount = Number($("#wdAmt").value.replace(",", "."));
+  if (!a) return;
+  if (!SOL_ADDR.test(address)) { setMsg(msg, "that doesn't look like a Solana address. paste it, don't type it.", "err"); return; }
+  if (!(amount >= 0.01)) { setMsg(msg, "the minimum is 0.01 SOL.", "err"); return; }
+  if (amount > num(a.balance_sol) + 1e-9) { setMsg(msg, "that's more than your balance. kowl math, not ours.", "err"); return; }
+  pr.wdKey = pr.wdKey || newKey(); // reused on retries so a double click or a flaky network can't send twice
+  pr.busy = true; renderAccount();
+  setMsg(msg, "sending the request…", "info");
+  try {
+    const r = await api("/api/withdraw", { address, amount_sol: amount, idempotency_key: pr.wdKey });
+    const st = r && r.withdrawal && r.withdrawal.status;
+    setMsg(msg, st === "review" ? "requested. it's over 1 SOL (or your account is new), so a human approves it first." : "requested 🫠 it goes out in the next batch. track it under withdrawals.", "ok");
+    pr.wdKey = null;
+    $("#wdAmt").value = "";
+    pr.meTab = "withdrawals";
+    $$("#meTabs button").forEach((x) => x.classList.toggle("on", x.dataset.me === "withdrawals"));
+    await loadMe();
+  } catch (err) {
+    setMsg(msg, err.message, "err");
+  } finally {
+    pr.busy = false; renderAccount();
+  }
+}
+
+/* ---- upload ---- */
+const IMG_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"], VID_TYPES = ["video/mp4", "video/webm"];
+const MB = 1024 * 1024;
+let upFile = null, upPreviewUrl = "";
+function pickFile() {
+  const f = $("#upFile").files[0], msg = $("#upMsg");
+  upFile = null;
+  if (upPreviewUrl) { URL.revokeObjectURL(upPreviewUrl); upPreviewUrl = ""; }
+  $("#dropPrev").hidden = true; $("#dropEmpty").hidden = false;
+  if (!f) return;
+  const isImg = IMG_TYPES.includes(f.type), isVid = VID_TYPES.includes(f.type);
+  if (!isImg && !isVid) { setMsg(msg, "png, jpg, webp, gif, mp4 or webm only.", "err"); return; }
+  if (isImg && f.size > 5 * MB) { setMsg(msg, "images max out at 5 MB. kowl's brain maxes out at 0.", "err"); return; }
+  if (isVid && f.size > 15 * MB) { setMsg(msg, "videos max out at 15 MB.", "err"); return; }
+  upFile = f;
+  upPreviewUrl = URL.createObjectURL(f);
+  const prev = $("#dropPrev");
+  prev.innerHTML = isVid ? `<video src="${upPreviewUrl}" muted autoplay loop playsinline></video>` : `<img src="${upPreviewUrl}" alt="">`;
+  prev.hidden = false; $("#dropEmpty").hidden = true;
+  setMsg(msg, "");
+}
+async function uploadMeme(e) {
+  e.preventDefault();
+  const msg = $("#upMsg"), title = $("#upTitle").value.trim();
+  if (!upFile) { setMsg(msg, "pick an image or a video first.", "err"); return; }
+  if (!title) { setMsg(msg, "give it a title. kowl needs something to read (he can't).", "err"); $("#upTitle").focus(); return; }
+  if (!$("#upAttest").checked) { setMsg(msg, "tick the box: it has to be your own meme, and payroll isn't available in the UK, EU or Australia.", "err"); return; }
+  const btn = $("#upBtn");
+  btn.disabled = true; btn.textContent = "uploading…";
+  setMsg(msg, "");
+  try {
+    const fd = new FormData();
+    fd.append("title", title); fd.append("attest", "1"); fd.append("file", upFile);
+    await api("/api/memes", fd);
+    setMsg(msg, "submitted 🫠 a human checks it before it goes public (usually within a few hours). track it in my kowl.", "ok");
+    $("#uploadForm").reset();
+    pickFile();
+    melt(innerWidth / 2, innerHeight / 2, 10);
+    pr.meTab = "memes";
+    $$("#meTabs button").forEach((x) => x.classList.toggle("on", x.dataset.me === "memes"));
+    loadMe();
+  } catch (err) {
+    setMsg(msg, err.message, "err");
+  } finally {
+    btn.disabled = false; btn.textContent = "upload for review";
+  }
+}
+
+/* ---- gallery ---- */
+function memeCard(m) {
+  const u = mediaUrl(m.url), au = m.author || {}, e = m.engagement || {};
+  const media = !u ? '<span class="mthumb-ph">🫠</span>' : m.kind === "video"
+    ? `<video src="${esc(u)}" muted loop playsinline controls preload="metadata"></video>`
+    : `<img src="${esc(u)}" alt="${esc(m.title || "kowl meme")}" loading="lazy">`;
+  return `<article class="mcard${m.best ? " is-best" : ""}" data-id="${esc(m.id)}">
+    <div class="mmedia">${m.best ? '<span class="best-badge">⭐ best</span>' : ""}${media}</div>
+    <div class="mbody">
+      <b class="mtitle">${esc(m.title || "untitled")}</b>
+      <span class="mby">${avatar(au.avatar, au.name)}<span>${esc(au.name || "kowl")}${xLink(au.x_handle)} · ${esc(ago(m.created_at))}</span></span>
+      <span class="mstats"><span title="views">👁 ${commas(num(e.views))}</span><span title="shares">↗ ${commas(num(e.shares))}</span><span title="downloads">⬇ ${commas(num(e.downloads))}</span><b>${commas(num(m.points))} pts</b></span>
+      <div class="mfoot">
+        <button class="mini-btn" data-share>share</button>
+        <button class="mini-btn" data-dl>download</button>
+        <button class="link-btn rep" data-report>report</button>
+      </div>
+    </div>
+  </article>`;
+}
+function track(id, type) {
+  if (!API) return;
+  api(`/api/memes/${encodeURIComponent(id)}/event`, { type }).catch(() => { /* counting is best effort */ });
+}
+let viewIO = null;
+function watchViews() {
+  if (!("IntersectionObserver" in window)) return;
+  viewIO = viewIO || new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      const id = en.target.dataset.id;
+      viewIO.unobserve(en.target);
+      if (pr.seen.has(id)) return;
+      pr.seen.add(id);
+      track(id, "view");
+    });
+  }, { threshold: 0.6 });
+  $$("#gallery .mcard").forEach((c) => { if (!pr.seen.has(c.dataset.id)) viewIO.observe(c); });
+}
+function renderGallery() {
+  const el = $("#gallery");
+  if (!isOpen()) {
+    el.innerHTML = emptyHTML("this-is-the-one", "the gallery opens at launch", "make your memes now: the pfp maker, the meme pack and the KOL toolkit below are all free ammo.");
+    $("#galMore").hidden = true;
+    return;
+  }
+  if (!pr.memes.length) {
+    el.innerHTML = emptyHTML("send-it", pr.sort === "best" ? "no ⭐ best picks yet" : "no memes yet", "be the first: sign in, upload one, and a human puts it here.");
+    $("#galMore").hidden = true;
+    return;
+  }
+  el.innerHTML = pr.memes.map(memeCard).join("");
+  $("#galMore").hidden = !pr.cursor;
+  watchViews();
+}
+async function loadGallery(reset) {
+  if (!isOpen()) { pr.memes = []; pr.cursor = null; renderGallery(); return; }
+  if (reset) { pr.memes = []; pr.cursor = null; }
+  try {
+    const r = await api(`/api/memes?sort=${pr.sort}&limit=12${pr.cursor ? "&cursor=" + encodeURIComponent(pr.cursor) : ""}`);
+    pr.memes = pr.memes.concat(Array.isArray(r && r.memes) ? r.memes : []);
+    pr.cursor = r && r.next ? r.next : null;
+    renderGallery();
+  } catch {
+    $("#gallery").innerHTML = failHTML;
+  }
+}
+async function shareMeme(m) {
+  const url = mediaUrl(m.url);
+  const text = `${m.title || "kowl meme"} 🫠 $KOWL`;
+  try {
+    if (navigator.share) { await navigator.share({ title: m.title || "kowl meme", text, url }); track(m.id, "share"); return; }
+  } catch (err) {
+    if (err && err.name === "AbortError") return;
+  }
+  const ok = await copy(url);
+  toast(ok ? "link copied. go share it." : "copy failed.");
+  if (ok) track(m.id, "share");
+}
+async function downloadMeme(m) {
+  const url = mediaUrl(m.url);
+  const ext = (url.split("?")[0].match(/\.(\w{3,4})$/) || [, m.kind === "video" ? "mp4" : "png"])[1];
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+    const href = URL.createObjectURL(await res.blob());
+    const a = document.createElement("a");
+    a.href = href; a.download = `kowl-meme-${m.id}.${ext}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(href), 4000);
+    track(m.id, "download");
+    toast("downloaded. remix it, post it, keep it.");
+  } catch {
+    window.open(url, "_blank", "noopener");
+  }
+}
+async function report(reason) {
+  const id = pr.reportId;
+  closeModal($("#reportModal"));
+  if (!id) return;
+  try {
+    await api("/api/report", { meme_id: isNaN(+id) ? id : +id, reason });
+    toast("reported. a human will look.");
+  } catch (e) { toast(e.message); }
+}
+function initGallery() {
+  const sorts = $$("#galSort button");
+  sorts.forEach((b) => b.addEventListener("click", () => {
+    sorts.forEach((x) => x.classList.toggle("on", x === b));
+    pr.sort = b.dataset.sort;
+    loadGallery(true);
+  }));
+  $("#galMore").addEventListener("click", () => loadGallery(false));
+  $("#gallery").addEventListener("click", (e) => {
+    const card = e.target.closest(".mcard");
+    if (!card) return;
+    const m = pr.memes.find((x) => String(x.id) === card.dataset.id);
+    if (!m) return;
+    if (e.target.closest("[data-share]")) shareMeme(m);
+    else if (e.target.closest("[data-dl]")) downloadMeme(m);
+    else if (e.target.closest("[data-report]")) { pr.reportId = card.dataset.id; openModal($("#reportModal")); }
+  });
+  $("#repOpts").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-reason]");
+    if (b) report(b.dataset.reason);
+  });
+}
+
+function initPayroll() {
+  initBoards();
+  initGallery();
+  initMe();
+  $("#upFile").addEventListener("change", pickFile);
+  $("#uploadForm").addEventListener("submit", uploadMeme);
+  applyStats(null);
+  loadBoards();
+  renderGallery();
+  setInterval(tickPayday, 1000);
+  if (!API) return;
+  loadStats().then(() => { if (pr.token) loadMe(); });
+  setInterval(() => { if (!document.hidden) loadStats(); }, 45000);
+  setInterval(() => { if (!document.hidden && pr.nextAt && Date.now() > pr.nextAt + 15000) { pr.nextAt = 0; loadStats().then(() => { if (pr.token) loadMe(); }); } }, 5000);
+}
